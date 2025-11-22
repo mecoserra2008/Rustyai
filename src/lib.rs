@@ -95,6 +95,9 @@ pub mod naive_bayes;
 pub mod nn;
 pub mod autograd;
 
+// Reinforcement learning
+pub mod rl;
+
 // Time series module
 pub mod timeseries;
 

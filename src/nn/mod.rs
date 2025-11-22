@@ -15,6 +15,7 @@ pub mod optimizers;
 pub mod regularization;
 pub mod attention;
 pub mod schedulers;
+pub mod generative;
 
 use crate::error::{Result, RustyAIError};
 use ndarray::{Array1, Array2, ScalarOperand};
