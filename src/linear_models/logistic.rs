@@ -4,6 +4,7 @@ use crate::error::{Result, RustyAIError};
 use crate::optimize::{gradient_descent::*, ObjectiveFunction};
 use ndarray::{Array1, Array2};
 use num_traits::Float;
+use std::iter::Sum;
 use serde::{Deserialize, Serialize};
 
 /// Logistic Regression classifier
@@ -21,7 +22,7 @@ pub struct LogisticRegression<A> {
     pub C: A,
 }
 
-impl<A: Float> LogisticRegression<A> {
+impl<A: Float + ScalarOperand + Sum> LogisticRegression<A> {
     /// Create a new LogisticRegression model
     pub fn new() -> Self {
         Self {
@@ -106,7 +107,7 @@ impl<A: Float> LogisticRegression<A> {
     }
 }
 
-impl<A: Float> Default for LogisticRegression<A> {
+impl<A: Float + ScalarOperand + Sum> Default for LogisticRegression<A> {
     fn default() -> Self {
         Self::new()
     }

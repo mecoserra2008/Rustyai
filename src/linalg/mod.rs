@@ -4,14 +4,15 @@
 //! solvers, and numerical operations.
 
 use crate::error::{Result, RustyAIError};
-use ndarray::{Array1, Array2, ArrayView1, ArrayView2};
+use ndarray::{Array1, Array2, ArrayView1, ArrayView2, ScalarOperand};
 use num_traits::Float;
+use std::iter::Sum;
 
 pub mod decomposition;
 pub mod solve;
 
 /// Compute the dot product of two vectors
-pub fn dot<A: Float>(a: &Array1<A>, b: &Array1<A>) -> Result<A> {
+pub fn dot<A: Float + ScalarOperand + Sum>(a: &Array1<A>, b: &Array1<A>) -> Result<A> {
     if a.len() != b.len() {
         return Err(RustyAIError::DimensionMismatch(format!(
             "Vector dimensions must match: {} vs {}",
@@ -23,7 +24,7 @@ pub fn dot<A: Float>(a: &Array1<A>, b: &Array1<A>) -> Result<A> {
 }
 
 /// Matrix-vector multiplication
-pub fn matvec<A: Float>(mat: &Array2<A>, vec: &Array1<A>) -> Result<Array1<A>> {
+pub fn matvec<A: Float + ScalarOperand + Sum>(mat: &Array2<A>, vec: &Array1<A>) -> Result<Array1<A>> {
     if mat.ncols() != vec.len() {
         return Err(RustyAIError::DimensionMismatch(format!(
             "Matrix columns ({}) must match vector length ({})",
@@ -40,7 +41,7 @@ pub fn matvec<A: Float>(mat: &Array2<A>, vec: &Array1<A>) -> Result<Array1<A>> {
 }
 
 /// Matrix multiplication
-pub fn matmul<A: Float>(a: &Array2<A>, b: &Array2<A>) -> Result<Array2<A>> {
+pub fn matmul<A: Float + ScalarOperand + Sum>(a: &Array2<A>, b: &Array2<A>) -> Result<Array2<A>> {
     if a.ncols() != b.nrows() {
         return Err(RustyAIError::DimensionMismatch(format!(
             "Matrix dimensions incompatible: ({}, {}) x ({}, {})",
@@ -63,17 +64,17 @@ pub fn matmul<A: Float>(a: &Array2<A>, b: &Array2<A>) -> Result<Array2<A>> {
 }
 
 /// Compute the Frobenius norm of a matrix
-pub fn norm_frobenius<A: Float>(mat: &Array2<A>) -> A {
+pub fn norm_frobenius<A: Float + ScalarOperand + Sum>(mat: &Array2<A>) -> A {
     mat.iter().map(|&x| x * x).sum::<A>().sqrt()
 }
 
 /// Compute the L2 norm (Euclidean norm) of a vector
-pub fn norm_l2<A: Float>(vec: &Array1<A>) -> A {
+pub fn norm_l2<A: Float + ScalarOperand + Sum>(vec: &Array1<A>) -> A {
     vec.iter().map(|&x| x * x).sum::<A>().sqrt()
 }
 
 /// Compute the L1 norm (Manhattan norm) of a vector
-pub fn norm_l1<A: Float>(vec: &Array1<A>) -> A {
+pub fn norm_l1<A: Float + ScalarOperand + Sum>(vec: &Array1<A>) -> A {
     vec.iter().map(|&x| x.abs()).sum()
 }
 
@@ -83,7 +84,7 @@ pub fn transpose<A: Clone>(mat: &Array2<A>) -> Array2<A> {
 }
 
 /// Compute the trace of a square matrix
-pub fn trace<A: Float>(mat: &Array2<A>) -> Result<A> {
+pub fn trace<A: Float + ScalarOperand + Sum>(mat: &Array2<A>) -> Result<A> {
     if mat.nrows() != mat.ncols() {
         return Err(RustyAIError::InvalidShape {
             expected: "square matrix".to_string(),
@@ -94,7 +95,7 @@ pub fn trace<A: Float>(mat: &Array2<A>) -> Result<A> {
 }
 
 /// Create an identity matrix
-pub fn eye<A: Float>(n: usize) -> Array2<A> {
+pub fn eye<A: Float + ScalarOperand + Sum>(n: usize) -> Array2<A> {
     let mut mat = Array2::zeros((n, n));
     for i in 0..n {
         mat[[i, i]] = A::one();
@@ -103,7 +104,7 @@ pub fn eye<A: Float>(n: usize) -> Array2<A> {
 }
 
 /// Compute matrix determinant using LU decomposition (simple implementation)
-pub fn det<A: Float>(mat: &Array2<A>) -> Result<A> {
+pub fn det<A: Float + ScalarOperand + Sum>(mat: &Array2<A>) -> Result<A> {
     if mat.nrows() != mat.ncols() {
         return Err(RustyAIError::InvalidShape {
             expected: "square matrix".to_string(),

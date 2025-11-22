@@ -4,6 +4,7 @@ use crate::error::{Result, RustyAIError};
 use crate::linalg::solve::solve;
 use ndarray::{Array1, Array2};
 use num_traits::Float;
+use std::iter::Sum;
 use serde::{Deserialize, Serialize};
 
 /// Ridge regression (L2 regularization)
@@ -17,7 +18,7 @@ pub struct Ridge<A> {
     pub intercept: Option<A>,
 }
 
-impl<A: Float> Ridge<A> {
+impl<A: Float + ScalarOperand + Sum> Ridge<A> {
     /// Create a new Ridge model
     pub fn new(alpha: A) -> Self {
         Self {
@@ -82,7 +83,7 @@ pub struct Lasso<A> {
     pub max_iter: usize,
 }
 
-impl<A: Float> Lasso<A> {
+impl<A: Float + ScalarOperand + Sum> Lasso<A> {
     /// Create a new Lasso model
     pub fn new(alpha: A) -> Self {
         Self {

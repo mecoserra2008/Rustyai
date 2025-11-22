@@ -4,6 +4,7 @@ use super::DecisionTree;
 use crate::error::{Result, RustyAIError};
 use ndarray::{Array1, Array2};
 use num_traits::Float;
+use std::iter::Sum;
 use rand::seq::SliceRandom;
 use rand::thread_rng;
 use serde::{Deserialize, Serialize};
@@ -18,7 +19,7 @@ pub struct RandomForest<A> {
     max_features: Option<usize>,
 }
 
-impl<A: Float> RandomForest<A> {
+impl<A: Float + ScalarOperand + Sum> RandomForest<A> {
     /// Create a new RandomForest
     pub fn new() -> Self {
         Self {
@@ -85,7 +86,7 @@ impl<A: Float> RandomForest<A> {
     }
 }
 
-impl<A: Float> Default for RandomForest<A> {
+impl<A: Float + ScalarOperand + Sum> Default for RandomForest<A> {
     fn default() -> Self {
         Self::new()
     }
@@ -100,7 +101,7 @@ pub struct RandomForestBuilder<A> {
     _phantom: std::marker::PhantomData<A>,
 }
 
-impl<A: Float> RandomForestBuilder<A> {
+impl<A: Float + ScalarOperand + Sum> RandomForestBuilder<A> {
     pub fn new() -> Self {
         Self {
             n_estimators: 100,

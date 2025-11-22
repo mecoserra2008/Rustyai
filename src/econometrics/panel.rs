@@ -9,9 +9,10 @@
 //! - Hausman test for fixed vs random effects
 
 use crate::error::{Result, RustyAIError};
-use ndarray::{Array1, Array2};
+use ndarray::{Array1, Array2, ScalarOperand};
 use num_traits::Float;
 use serde::{Deserialize, Serialize};
+use std::iter::Sum;
 
 /// Panel data structure
 #[derive(Debug, Clone)]
@@ -30,7 +31,10 @@ pub struct PanelData<A> {
     pub time_ids: Vec<usize>,
 }
 
-impl<A: Float> PanelData<A> {
+impl<A> PanelData<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Create a new panel data structure
     pub fn new(
         data: Array2<A>,
@@ -86,7 +90,10 @@ pub struct FixedEffects<A> {
     n_periods: usize,
 }
 
-impl<A: Float> FixedEffects<A> {
+impl<A> FixedEffects<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Create a new fixed effects estimator
     pub fn new() -> Self {
         Self {
@@ -129,7 +136,10 @@ impl<A: Float> FixedEffects<A> {
     }
 }
 
-impl<A: Float> Default for FixedEffects<A> {
+impl<A> Default for FixedEffects<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     fn default() -> Self {
         Self::new()
     }
@@ -152,7 +162,10 @@ pub struct RandomEffects<A> {
     pub r_squared: Option<A>,
 }
 
-impl<A: Float> RandomEffects<A> {
+impl<A> RandomEffects<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Create a new random effects estimator
     pub fn new() -> Self {
         Self {
@@ -185,7 +198,10 @@ impl<A: Float> RandomEffects<A> {
     }
 }
 
-impl<A: Float> Default for RandomEffects<A> {
+impl<A> Default for RandomEffects<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     fn default() -> Self {
         Self::new()
     }
@@ -202,7 +218,10 @@ pub struct FirstDifferences<A> {
     pub r_squared: Option<A>,
 }
 
-impl<A: Float> FirstDifferences<A> {
+impl<A> FirstDifferences<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Create a new first differences estimator
     pub fn new() -> Self {
         Self {
@@ -221,7 +240,10 @@ impl<A: Float> FirstDifferences<A> {
     }
 }
 
-impl<A: Float> Default for FirstDifferences<A> {
+impl<A> Default for FirstDifferences<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     fn default() -> Self {
         Self::new()
     }
@@ -237,7 +259,10 @@ pub struct HausmanTest<A> {
     pub p_value: A,
 }
 
-impl<A: Float> HausmanTest<A> {
+impl<A> HausmanTest<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Perform Hausman test
     pub fn test(
         fe_coef: &Array1<A>,
@@ -277,7 +302,10 @@ pub struct DifferenceInDifferences<A> {
     pub pre_control_mean: Option<A>,
 }
 
-impl<A: Float> DifferenceInDifferences<A> {
+impl<A> DifferenceInDifferences<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Create a new DiD estimator
     pub fn new() -> Self {
         Self {
@@ -322,7 +350,10 @@ impl<A: Float> DifferenceInDifferences<A> {
     }
 }
 
-impl<A: Float> Default for DifferenceInDifferences<A> {
+impl<A> Default for DifferenceInDifferences<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     fn default() -> Self {
         Self::new()
     }

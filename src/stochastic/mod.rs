@@ -33,7 +33,7 @@ pub struct BrownianMotion<A> {
     pub sigma: A,
 }
 
-impl<A: Float> BrownianMotion<A> {
+impl<A: Float + ScalarOperand + Sum> BrownianMotion<A> {
     /// Create standard Brownian motion (μ=0, σ=1)
     pub fn standard() -> Self {
         Self {
@@ -112,7 +112,7 @@ pub struct GeometricBrownianMotion<A> {
     pub sigma: A,
 }
 
-impl<A: Float> GeometricBrownianMotion<A> {
+impl<A: Float + ScalarOperand + Sum> GeometricBrownianMotion<A> {
     /// Create GBM with given parameters
     pub fn new(initial_value: A, mu: A, sigma: A) -> Self {
         Self {
@@ -227,7 +227,7 @@ pub struct OrnsteinUhlenbeck<A> {
     pub value: A,
 }
 
-impl<A: Float> OrnsteinUhlenbeck<A> {
+impl<A: Float + ScalarOperand + Sum> OrnsteinUhlenbeck<A> {
     /// Create OU process
     pub fn new(theta: A, mu: A, sigma: A, initial_value: A) -> Self {
         Self {

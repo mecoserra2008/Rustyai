@@ -6,13 +6,14 @@
 use crate::error::{Result, RustyAIError};
 use ndarray::{Array1, Array2};
 use num_traits::Float;
+use std::iter::Sum;
 
 pub mod gradient_descent;
 pub mod lbfgs;
 pub mod coordinate_descent;
 
 /// Trait for objective functions
-pub trait ObjectiveFunction<A: Float> {
+pub trait ObjectiveFunction<A: Float + ScalarOperand + Sum> {
     /// Evaluate the objective function
     fn value(&self, x: &Array1<A>) -> A;
 

@@ -14,10 +14,10 @@ pub mod regression;
 pub mod gwr;
 
 use crate::error::Result;
-use ndarray::{Array1, Array2};
+use ndarray::{Array1, Array2, ScalarOperand};
 use num_traits::Float;
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::iter::Sum;
 
 /// Spatial weight matrix
 #[derive(Debug, Clone)]
@@ -30,7 +30,10 @@ pub struct SpatialWeights<A> {
     pub row_standardized: bool,
 }
 
-impl<A: Float> SpatialWeights<A> {
+impl<A> SpatialWeights<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Create spatial weights from distance matrix
     pub fn from_distances(distances: &Array2<A>, threshold: A) -> Self {
         let n = distances.nrows();
@@ -121,7 +124,10 @@ pub struct MoransI<A> {
     pub p_value: A,
 }
 
-impl<A: Float> MoransI<A> {
+impl<A> MoransI<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Compute Moran's I
     ///
     /// I = (n/S0) * Σ_i Σ_j w_ij (x_i - x̄)(x_j - x̄) / Σ_i (x_i - x̄)²
@@ -181,7 +187,10 @@ pub struct GearysC<A> {
     pub p_value: A,
 }
 
-impl<A: Float> GearysC<A> {
+impl<A> GearysC<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Compute Geary's C
     ///
     /// C = ((n-1)/(2*S0)) * Σ_i Σ_j w_ij (x_i - x_j)² / Σ_i (x_i - x̄)²
@@ -242,7 +251,10 @@ pub enum ClusterType {
     NotSignificant,
 }
 
-impl<A: Float> LocalMoransI<A> {
+impl<A> LocalMoransI<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Compute local Moran's I for each location
     pub fn compute(x: &Array1<A>, W: &SpatialWeights<A>) -> Self {
         let n = x.len();

@@ -25,7 +25,7 @@ pub struct ARIMA<A> {
     pub ma_coefs: Option<Array1<A>>,
 }
 
-impl<A: Float> ARIMA<A> {
+impl<A: Float + ScalarOperand + Sum> ARIMA<A> {
     pub fn new(p: usize, d: usize, q: usize) -> Self {
         Self { p, d, q, ar_coefs: None, ma_coefs: None }
     }
@@ -36,11 +36,12 @@ impl<A: Float> ARIMA<A> {
 pub struct VAR<A> {
     pub p: usize,
     pub n_vars: usize,
+    pub coefs: Option<Array2<A>>,
 }
 
-impl<A: Float> VAR<A> {
+impl<A: Float + ScalarOperand + Sum> VAR<A> {
     pub fn new(p: usize) -> Self {
-        Self { p, n_vars: 0 }
+        Self { p, n_vars: 0, coefs: None }
     }
 }
 
@@ -49,10 +50,12 @@ impl<A: Float> VAR<A> {
 pub struct GARCH<A> {
     pub p: usize,
     pub q: usize,
+    pub alpha: Option<Array1<A>>,
+    pub beta: Option<Array1<A>>,
 }
 
-impl<A: Float> GARCH<A> {
+impl<A: Float + ScalarOperand + Sum> GARCH<A> {
     pub fn new(p: usize, q: usize) -> Self {
-        Self { p, q }
+        Self { p, q, alpha: None, beta: None }
     }
 }

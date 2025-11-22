@@ -1,8 +1,9 @@
 //! L-BFGS optimization algorithm
 
 use super::{ObjectiveFunction, OptimizationResult};
-use ndarray::Array1;
+use ndarray::{Array1, ScalarOperand};
 use num_traits::Float;
+use std::iter::Sum;
 
 /// L-BFGS optimizer configuration
 #[derive(Debug, Clone)]
@@ -15,7 +16,7 @@ pub struct LBFGSConfig<A> {
     pub tol: A,
 }
 
-impl<A: Float> Default for LBFGSConfig<A> {
+impl<A: Float + ScalarOperand + Sum> Default for LBFGSConfig<A> {
     fn default() -> Self {
         Self {
             m: 10,
@@ -96,7 +97,7 @@ where
     }
 }
 
-fn lbfgs_direction<A: Float>(
+fn lbfgs_direction<A: Float + ScalarOperand + Sum>(
     grad: &Array1<A>,
     s_history: &[Array1<A>],
     y_history: &[Array1<A>],

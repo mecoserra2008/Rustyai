@@ -4,10 +4,11 @@
 
 use ndarray::{Array1, Array2};
 use num_traits::Float;
+use std::iter::Sum;
 use std::collections::HashMap;
 
 /// Mean Squared Error
-pub fn mean_squared_error<A: Float>(y_true: &Array1<A>, y_pred: &Array1<A>) -> A {
+pub fn mean_squared_error<A: Float + ScalarOperand + Sum>(y_true: &Array1<A>, y_pred: &Array1<A>) -> A {
     if y_true.len() != y_pred.len() {
         return A::nan();
     }
@@ -22,12 +23,12 @@ pub fn mean_squared_error<A: Float>(y_true: &Array1<A>, y_pred: &Array1<A>) -> A
 }
 
 /// Root Mean Squared Error
-pub fn root_mean_squared_error<A: Float>(y_true: &Array1<A>, y_pred: &Array1<A>) -> A {
+pub fn root_mean_squared_error<A: Float + ScalarOperand + Sum>(y_true: &Array1<A>, y_pred: &Array1<A>) -> A {
     mean_squared_error(y_true, y_pred).sqrt()
 }
 
 /// Mean Absolute Error
-pub fn mean_absolute_error<A: Float>(y_true: &Array1<A>, y_pred: &Array1<A>) -> A {
+pub fn mean_absolute_error<A: Float + ScalarOperand + Sum>(y_true: &Array1<A>, y_pred: &Array1<A>) -> A {
     if y_true.len() != y_pred.len() {
         return A::nan();
     }
@@ -42,7 +43,7 @@ pub fn mean_absolute_error<A: Float>(y_true: &Array1<A>, y_pred: &Array1<A>) -> 
 }
 
 /// R² (coefficient of determination) score
-pub fn r2_score<A: Float>(y_true: &Array1<A>, y_pred: &Array1<A>) -> A {
+pub fn r2_score<A: Float + ScalarOperand + Sum>(y_true: &Array1<A>, y_pred: &Array1<A>) -> A {
     if y_true.len() != y_pred.len() {
         return A::nan();
     }
@@ -64,7 +65,7 @@ pub fn r2_score<A: Float>(y_true: &Array1<A>, y_pred: &Array1<A>) -> A {
 }
 
 /// Accuracy score for classification
-pub fn accuracy<A: Float>(y_true: &Array1<A>, y_pred: &Array1<A>) -> A {
+pub fn accuracy<A: Float + ScalarOperand + Sum>(y_true: &Array1<A>, y_pred: &Array1<A>) -> A {
     if y_true.len() != y_pred.len() {
         return A::nan();
     }

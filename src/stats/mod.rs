@@ -3,17 +3,18 @@
 //! Comprehensive statistical toolkit including distributions, hypothesis tests,
 //! and statistical measures.
 
-use ndarray::{Array1, Array2};
+use ndarray::{Array1, Array2, ScalarOperand};
 use num_traits::Float;
 use rand::Rng;
 use rand_distr::{Distribution, Normal, StandardNormal, Uniform};
 use std::f64::consts::PI;
+use std::iter::Sum;
 
 pub mod distributions;
 pub mod hypothesis;
 
 /// Compute the mean of an array
-pub fn mean<A: Float>(data: &Array1<A>) -> A {
+pub fn mean<A: Float + ScalarOperand + Sum>(data: &Array1<A>) -> A {
     if data.is_empty() {
         return A::zero();
     }
@@ -21,7 +22,7 @@ pub fn mean<A: Float>(data: &Array1<A>) -> A {
 }
 
 /// Compute the variance of an array
-pub fn variance<A: Float>(data: &Array1<A>, ddof: usize) -> A {
+pub fn variance<A: Float + ScalarOperand + Sum>(data: &Array1<A>, ddof: usize) -> A {
     if data.len() <= ddof {
         return A::zero();
     }
@@ -32,12 +33,12 @@ pub fn variance<A: Float>(data: &Array1<A>, ddof: usize) -> A {
 }
 
 /// Compute the standard deviation of an array
-pub fn std<A: Float>(data: &Array1<A>, ddof: usize) -> A {
+pub fn std<A: Float + ScalarOperand + Sum>(data: &Array1<A>, ddof: usize) -> A {
     variance(data, ddof).sqrt()
 }
 
 /// Compute the median of an array
-pub fn median<A: Float>(data: &Array1<A>) -> Option<A> {
+pub fn median<A: Float + ScalarOperand + Sum>(data: &Array1<A>) -> Option<A> {
     if data.is_empty() {
         return None;
     }
@@ -54,7 +55,7 @@ pub fn median<A: Float>(data: &Array1<A>) -> Option<A> {
 }
 
 /// Compute quantiles of an array
-pub fn quantile<A: Float>(data: &Array1<A>, q: A) -> Option<A> {
+pub fn quantile<A: Float + ScalarOperand + Sum>(data: &Array1<A>, q: A) -> Option<A> {
     if data.is_empty() || q < A::zero() || q > A::one() {
         return None;
     }
@@ -74,7 +75,7 @@ pub fn quantile<A: Float>(data: &Array1<A>, q: A) -> Option<A> {
 }
 
 /// Compute covariance between two arrays
-pub fn covariance<A: Float>(x: &Array1<A>, y: &Array1<A>, ddof: usize) -> Option<A> {
+pub fn covariance<A: Float + ScalarOperand + Sum>(x: &Array1<A>, y: &Array1<A>, ddof: usize) -> Option<A> {
     if x.len() != y.len() || x.len() <= ddof {
         return None;
     }
@@ -92,7 +93,7 @@ pub fn covariance<A: Float>(x: &Array1<A>, y: &Array1<A>, ddof: usize) -> Option
 }
 
 /// Compute Pearson correlation coefficient
-pub fn correlation<A: Float>(x: &Array1<A>, y: &Array1<A>) -> Option<A> {
+pub fn correlation<A: Float + ScalarOperand + Sum>(x: &Array1<A>, y: &Array1<A>) -> Option<A> {
     if x.len() != y.len() {
         return None;
     }
@@ -109,7 +110,7 @@ pub fn correlation<A: Float>(x: &Array1<A>, y: &Array1<A>) -> Option<A> {
 }
 
 /// Compute covariance matrix
-pub fn cov_matrix<A: Float>(data: &Array2<A>, ddof: usize) -> Array2<A> {
+pub fn cov_matrix<A: Float + ScalarOperand + Sum>(data: &Array2<A>, ddof: usize) -> Array2<A> {
     let n_features = data.ncols();
     let n_samples = data.nrows();
     let mut cov = Array2::zeros((n_features, n_features));
@@ -139,7 +140,7 @@ pub fn cov_matrix<A: Float>(data: &Array2<A>, ddof: usize) -> Array2<A> {
 }
 
 /// Compute correlation matrix
-pub fn corr_matrix<A: Float>(data: &Array2<A>) -> Array2<A> {
+pub fn corr_matrix<A: Float + ScalarOperand + Sum>(data: &Array2<A>) -> Array2<A> {
     let cov = cov_matrix(data, 1);
     let n = cov.nrows();
     let mut corr = Array2::zeros((n, n));
@@ -158,7 +159,7 @@ pub fn corr_matrix<A: Float>(data: &Array2<A>) -> Array2<A> {
 }
 
 /// Compute skewness
-pub fn skewness<A: Float>(data: &Array1<A>) -> A {
+pub fn skewness<A: Float + ScalarOperand + Sum>(data: &Array1<A>) -> A {
     let n = A::from(data.len()).unwrap();
     let m = mean(data);
     let s = std(data, 1);
@@ -172,7 +173,7 @@ pub fn skewness<A: Float>(data: &Array1<A>) -> A {
 }
 
 /// Compute kurtosis
-pub fn kurtosis<A: Float>(data: &Array1<A>) -> A {
+pub fn kurtosis<A: Float + ScalarOperand + Sum>(data: &Array1<A>) -> A {
     let n = A::from(data.len()).unwrap();
     let m = mean(data);
     let s = std(data, 1);

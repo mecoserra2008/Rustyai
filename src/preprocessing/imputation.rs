@@ -3,6 +3,7 @@
 use crate::error::{Result, RustyAIError};
 use ndarray::{Array1, Array2, Axis};
 use num_traits::Float;
+use std::iter::Sum;
 
 /// Strategy for imputing missing values
 #[derive(Debug, Clone, Copy)]
@@ -24,7 +25,7 @@ pub struct SimpleImputer<A> {
     statistics: Option<Array1<A>>,
 }
 
-impl<A: Float> SimpleImputer<A> {
+impl<A: Float + ScalarOperand + Sum> SimpleImputer<A> {
     /// Create a new SimpleImputer with mean strategy
     pub fn new() -> Self {
         Self {
@@ -105,7 +106,7 @@ impl<A: Float> SimpleImputer<A> {
     }
 }
 
-impl<A: Float> Default for SimpleImputer<A> {
+impl<A: Float + ScalarOperand + Sum> Default for SimpleImputer<A> {
     fn default() -> Self {
         Self::new()
     }

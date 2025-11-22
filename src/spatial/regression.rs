@@ -9,9 +9,10 @@
 
 use super::SpatialWeights;
 use crate::error::{Result, RustyAIError};
-use ndarray::{Array1, Array2};
+use ndarray::{Array1, Array2, ScalarOperand};
 use num_traits::Float;
 use serde::{Deserialize, Serialize};
+use std::iter::Sum;
 
 /// Spatial Autoregressive (SAR/Lag) Model
 /// y = ρWy + Xβ + ε
@@ -29,7 +30,10 @@ pub struct SpatialLag<A> {
     pub aic: Option<A>,
 }
 
-impl<A: Float> SpatialLag<A> {
+impl<A> SpatialLag<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Create new SAR model
     pub fn new() -> Self {
         Self {
@@ -74,7 +78,10 @@ impl<A: Float> SpatialLag<A> {
     }
 }
 
-impl<A: Float> Default for SpatialLag<A> {
+impl<A> Default for SpatialLag<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     fn default() -> Self {
         Self::new()
     }
@@ -92,7 +99,10 @@ pub struct SpatialError<A> {
     pub std_errors: Option<Array1<A>>,
 }
 
-impl<A: Float> SpatialError<A> {
+impl<A> SpatialError<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Create new SEM model
     pub fn new() -> Self {
         Self {
@@ -109,7 +119,10 @@ impl<A: Float> SpatialError<A> {
     }
 }
 
-impl<A: Float> Default for SpatialError<A> {
+impl<A> Default for SpatialError<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     fn default() -> Self {
         Self::new()
     }
@@ -129,7 +142,10 @@ pub struct SpatialDurbin<A> {
     pub std_errors: Option<Array1<A>>,
 }
 
-impl<A: Float> SpatialDurbin<A> {
+impl<A> SpatialDurbin<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Create new SDM model
     pub fn new() -> Self {
         Self {
@@ -158,7 +174,10 @@ impl<A: Float> SpatialDurbin<A> {
     }
 }
 
-impl<A: Float> Default for SpatialDurbin<A> {
+impl<A> Default for SpatialDurbin<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     fn default() -> Self {
         Self::new()
     }

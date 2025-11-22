@@ -5,6 +5,7 @@
 use crate::error::{Result, RustyAIError};
 use ndarray::{Array1, Array2};
 use num_traits::Float;
+use std::iter::Sum;
 use rand::Rng;
 use serde::{Deserialize, Serialize};
 
@@ -24,7 +25,7 @@ struct TreeNode<A> {
     value: Option<A>,
 }
 
-impl<A: Float> TreeNode<A> {
+impl<A: Float + ScalarOperand + Sum> TreeNode<A> {
     fn leaf(value: A) -> Self {
         Self {
             feature_idx: None,
@@ -69,7 +70,7 @@ pub struct DecisionTree<A> {
     min_samples_split: usize,
 }
 
-impl<A: Float> DecisionTree<A> {
+impl<A: Float + ScalarOperand + Sum> DecisionTree<A> {
     pub fn new(max_depth: Option<usize>, min_samples_split: usize) -> Self {
         Self {
             root: None,

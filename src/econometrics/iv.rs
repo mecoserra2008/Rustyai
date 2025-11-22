@@ -9,9 +9,10 @@
 //! - Weak instruments diagnostics
 
 use crate::error::{Result, RustyAIError};
-use ndarray::{Array1, Array2};
+use ndarray::{Array1, Array2, ScalarOperand};
 use num_traits::Float;
 use serde::{Deserialize, Serialize};
+use std::iter::Sum;
 
 /// Two-Stage Least Squares estimator
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -32,7 +33,10 @@ pub struct TwoStageLeastSquares<A> {
     n_instruments: usize,
 }
 
-impl<A: Float> TwoStageLeastSquares<A> {
+impl<A> TwoStageLeastSquares<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Create a new 2SLS estimator
     pub fn new() -> Self {
         Self {
@@ -110,7 +114,10 @@ impl<A: Float> TwoStageLeastSquares<A> {
     }
 }
 
-impl<A: Float> Default for TwoStageLeastSquares<A> {
+impl<A> Default for TwoStageLeastSquares<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     fn default() -> Self {
         Self::new()
     }
@@ -133,7 +140,10 @@ pub struct GMM<A> {
     tol: A,
 }
 
-impl<A: Float> GMM<A> {
+impl<A> GMM<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Create a new GMM estimator
     pub fn new() -> Self {
         Self {
@@ -195,7 +205,10 @@ impl<A: Float> GMM<A> {
     }
 }
 
-impl<A: Float> Default for GMM<A> {
+impl<A> Default for GMM<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     fn default() -> Self {
         Self::new()
     }
@@ -211,7 +224,10 @@ pub struct SarganHansenTest<A> {
     pub p_value: A,
 }
 
-impl<A: Float> SarganHansenTest<A> {
+impl<A> SarganHansenTest<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Perform Sargan-Hansen test
     ///
     /// H0: All instruments are valid (orthogonal to error term)
@@ -258,7 +274,10 @@ pub struct AndersonRubinTest<A> {
     pub p_value: A,
 }
 
-impl<A: Float> AndersonRubinTest<A> {
+impl<A> AndersonRubinTest<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Perform Anderson-Rubin test
     ///
     /// Tests H0: β = β0 (works even with weak instruments)

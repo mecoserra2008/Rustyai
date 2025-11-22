@@ -3,6 +3,7 @@
 use super::{ObjectiveFunction, OptimizationResult};
 use ndarray::Array1;
 use num_traits::Float;
+use std::iter::Sum;
 
 /// Coordinate descent optimizer configuration
 #[derive(Debug, Clone)]
@@ -15,7 +16,7 @@ pub struct CoordinateDescentConfig<A> {
     pub random: bool,
 }
 
-impl<A: Float> Default for CoordinateDescentConfig<A> {
+impl<A: Float + ScalarOperand + Sum> Default for CoordinateDescentConfig<A> {
     fn default() -> Self {
         Self {
             max_iter: 1000,

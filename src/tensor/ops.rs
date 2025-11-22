@@ -1,7 +1,7 @@
 //! Tensor operations
 
 use super::Tensor;
-use ndarray::Dimension;
+use ndarray::{Dimension, ScalarOperand};
 use num_traits::{Float, NumAssign};
 use std::ops::{Add, Div, Mul, Sub};
 
@@ -58,7 +58,7 @@ where
 // Scalar operations
 impl<A, D> Mul<A> for Tensor<A, D>
 where
-    A: Clone + NumAssign,
+    A: Clone + NumAssign + ScalarOperand,
     D: Dimension,
 {
     type Output = Self;
@@ -70,7 +70,7 @@ where
 
 impl<A, D> Div<A> for Tensor<A, D>
 where
-    A: Clone + NumAssign,
+    A: Clone + NumAssign + ScalarOperand,
     D: Dimension,
 {
     type Output = Self;

@@ -1,7 +1,8 @@
 //! Hypothesis testing functions
 
-use ndarray::Array1;
+use ndarray::{Array1, ScalarOperand};
 use num_traits::Float;
+use std::iter::Sum;
 
 use super::{mean, std, variance};
 
@@ -17,7 +18,7 @@ pub struct TTestResult<A> {
 }
 
 /// Perform a one-sample t-test
-pub fn ttest_1samp<A: Float>(data: &Array1<A>, popmean: A) -> TTestResult<A> {
+pub fn ttest_1samp<A: Float + ScalarOperand + Sum>(data: &Array1<A>, popmean: A) -> TTestResult<A> {
     let n = data.len();
     let sample_mean = mean(data);
     let sample_std = std(data, 1);
@@ -37,7 +38,7 @@ pub fn ttest_1samp<A: Float>(data: &Array1<A>, popmean: A) -> TTestResult<A> {
 }
 
 /// Perform a two-sample independent t-test
-pub fn ttest_ind<A: Float>(a: &Array1<A>, b: &Array1<A>) -> TTestResult<A> {
+pub fn ttest_ind<A: Float + ScalarOperand + Sum>(a: &Array1<A>, b: &Array1<A>) -> TTestResult<A> {
     let n1 = a.len();
     let n2 = b.len();
     let mean1 = mean(a);
@@ -77,7 +78,7 @@ pub struct FTestResult<A> {
 }
 
 /// Perform an F-test for equality of variances
-pub fn f_test<A: Float>(a: &Array1<A>, b: &Array1<A>) -> FTestResult<A> {
+pub fn f_test<A: Float + ScalarOperand + Sum>(a: &Array1<A>, b: &Array1<A>) -> FTestResult<A> {
     let var1 = variance(a, 1);
     let var2 = variance(b, 1);
 

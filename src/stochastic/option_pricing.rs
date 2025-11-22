@@ -1,15 +1,16 @@
 //! Option pricing models
 
 use num_traits::Float;
+use std::iter::Sum;
 
 /// Black-Scholes option pricing
-pub fn black_scholes_call<A: Float>(S: A, K: A, r: A, sigma: A, T: A) -> A {
+pub fn black_scholes_call<A: Float + ScalarOperand + Sum>(S: A, K: A, r: A, sigma: A, T: A) -> A {
     // Placeholder for Black-Scholes formula
     A::zero()
 }
 
 /// Black-Scholes put option
-pub fn black_scholes_put<A: Float>(S: A, K: A, r: A, sigma: A, T: A) -> A {
+pub fn black_scholes_put<A: Float + ScalarOperand + Sum>(S: A, K: A, r: A, sigma: A, T: A) -> A {
     A::zero()
 }
 

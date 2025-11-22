@@ -7,8 +7,9 @@
 //! - ARCH test for conditional heteroskedasticity
 
 use crate::error::Result;
-use ndarray::{Array1, Array2};
+use ndarray::{Array1, Array2, ScalarOperand};
 use num_traits::Float;
+use std::iter::Sum;
 
 /// Ramsey RESET test for functional form misspecification
 pub struct RamseyRESETTest<A> {
@@ -20,7 +21,10 @@ pub struct RamseyRESETTest<A> {
     pub p_value: A,
 }
 
-impl<A: Float> RamseyRESETTest<A> {
+impl<A> RamseyRESETTest<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Perform RESET test
     ///
     /// H0: Model is correctly specified
@@ -48,7 +52,10 @@ pub struct DurbinWatsonTest<A> {
     pub statistic: A,
 }
 
-impl<A: Float> DurbinWatsonTest<A> {
+impl<A> DurbinWatsonTest<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Compute Durbin-Watson statistic
     ///
     /// DW ≈ 2(1 - ρ) where ρ is first-order autocorrelation
@@ -96,7 +103,10 @@ pub struct JarqueBeraTest<A> {
     pub kurtosis: A,
 }
 
-impl<A: Float> JarqueBeraTest<A> {
+impl<A> JarqueBeraTest<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Perform Jarque-Bera test
     ///
     /// H0: Residuals are normally distributed
@@ -148,7 +158,10 @@ pub struct ARCHTest<A> {
     pub p_value: A,
 }
 
-impl<A: Float> ARCHTest<A> {
+impl<A> ARCHTest<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Perform ARCH test
     ///
     /// H0: No ARCH effects

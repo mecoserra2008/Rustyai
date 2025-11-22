@@ -1,12 +1,13 @@
 //! Probability distributions
 
 use num_traits::Float;
+use std::iter::Sum;
 use rand::Rng;
 use rand_distr::{Distribution, Normal, StandardNormal};
 use std::f64::consts::PI;
 
 /// Probability density function of the normal distribution
-pub fn normal_pdf<A: Float>(x: A, mu: A, sigma: A) -> A {
+pub fn normal_pdf<A: Float + ScalarOperand + Sum>(x: A, mu: A, sigma: A) -> A {
     let sqrt_2pi = A::from((2.0 * PI).sqrt()).unwrap();
     let coefficient = A::one() / (sigma * sqrt_2pi);
     let exponent = -((x - mu) * (x - mu)) / (A::from(2.0).unwrap() * sigma * sigma);
@@ -14,7 +15,7 @@ pub fn normal_pdf<A: Float>(x: A, mu: A, sigma: A) -> A {
 }
 
 /// Cumulative distribution function of the standard normal distribution
-pub fn standard_normal_cdf<A: Float>(x: A) -> A {
+pub fn standard_normal_cdf<A: Float + ScalarOperand + Sum>(x: A) -> A {
     // Using error function approximation
     let a1 = A::from(0.254829592).unwrap();
     let a2 = A::from(-0.284496736).unwrap();
@@ -39,7 +40,7 @@ pub fn standard_normal_cdf<A: Float>(x: A) -> A {
 }
 
 /// Normal distribution CDF
-pub fn normal_cdf<A: Float>(x: A, mu: A, sigma: A) -> A {
+pub fn normal_cdf<A: Float + ScalarOperand + Sum>(x: A, mu: A, sigma: A) -> A {
     standard_normal_cdf((x - mu) / sigma)
 }
 

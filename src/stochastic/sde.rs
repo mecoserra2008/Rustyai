@@ -3,13 +3,14 @@
 use crate::error::Result;
 use ndarray::Array1;
 use num_traits::Float;
+use std::iter::Sum;
 
 /// SDE Solver using Euler-Maruyama method
 pub struct EulerMaruyama<A> {
     _phantom: std::marker::PhantomData<A>,
 }
 
-impl<A: Float> EulerMaruyama<A> {
+impl<A: Float + ScalarOperand + Sum> EulerMaruyama<A> {
     pub fn new() -> Self {
         Self { _phantom: std::marker::PhantomData }
     }

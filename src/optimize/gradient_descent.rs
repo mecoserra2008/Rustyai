@@ -1,8 +1,9 @@
 //! Gradient descent optimization
 
 use super::{ObjectiveFunction, OptimizationResult};
-use ndarray::Array1;
+use ndarray::{Array1, ScalarOperand};
 use num_traits::Float;
+use std::iter::Sum;
 
 /// Gradient descent optimizer configuration
 #[derive(Debug, Clone)]
@@ -19,7 +20,7 @@ pub struct GradientDescentConfig<A> {
     pub nesterov: bool,
 }
 
-impl<A: Float> Default for GradientDescentConfig<A> {
+impl<A: Float + ScalarOperand + Sum> Default for GradientDescentConfig<A> {
     fn default() -> Self {
         Self {
             learning_rate: A::from(0.01).unwrap(),
@@ -97,7 +98,7 @@ pub struct AdamConfig<A> {
     pub tol: A,
 }
 
-impl<A: Float> Default for AdamConfig<A> {
+impl<A: Float + ScalarOperand + Sum> Default for AdamConfig<A> {
     fn default() -> Self {
         Self {
             learning_rate: A::from(0.001).unwrap(),
@@ -155,11 +156,11 @@ where
         let v_hat = v.mapv(|vi| vi / (A::one() - config.beta2.powf(t_float)));
 
         // Update parameters
-        x = x
-            - m_hat.iter()
-                .zip(v_hat.iter())
-                .map(|(&mi, &vi)| config.learning_rate * mi / (vi.sqrt() + config.epsilon))
-                .collect();
+        let update: Array1<A> = m_hat.iter()
+            .zip(v_hat.iter())
+            .map(|(mi, vi): (&A, &A)| config.learning_rate * (*mi) / (vi.sqrt() + config.epsilon))
+            .collect();
+        x = x - update;
 
         prev_f = fx;
     }

@@ -8,6 +8,7 @@ use crate::linalg::solve::lstsq;
 use crate::traits::{Predictor, Regressor};
 use ndarray::{Array1, Array2};
 use num_traits::Float;
+use std::iter::Sum;
 use serde::{Deserialize, Serialize};
 
 pub mod logistic;
@@ -28,7 +29,7 @@ pub struct LinearRegression<A> {
     intercept: Option<A>,
 }
 
-impl<A: Float> LinearRegression<A> {
+impl<A: Float + ScalarOperand + Sum> LinearRegression<A> {
     /// Create a new LinearRegression model
     pub fn new() -> Self {
         Self {
@@ -39,7 +40,7 @@ impl<A: Float> LinearRegression<A> {
     }
 }
 
-impl<A: Float> Default for LinearRegression<A> {
+impl<A: Float + ScalarOperand + Sum> Default for LinearRegression<A> {
     fn default() -> Self {
         Self::new()
     }

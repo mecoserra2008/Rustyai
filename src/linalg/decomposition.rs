@@ -3,8 +3,9 @@
 //! Includes QR, SVD, eigenvalue decomposition, Cholesky, and LU decomposition.
 
 use crate::error::{Result, RustyAIError};
-use ndarray::{Array1, Array2};
+use ndarray::{Array1, Array2, ScalarOperand};
 use num_traits::Float;
+use std::iter::Sum;
 
 /// QR decomposition using Gram-Schmidt
 pub struct QR<A> {
@@ -15,7 +16,7 @@ pub struct QR<A> {
 }
 
 /// Compute QR decomposition using Gram-Schmidt orthogonalization
-pub fn qr<A: Float>(mat: &Array2<A>) -> Result<QR<A>> {
+pub fn qr<A: Float + ScalarOperand + Sum>(mat: &Array2<A>) -> Result<QR<A>> {
     let (m, n) = (mat.nrows(), mat.ncols());
     let mut q = Array2::zeros((m, n));
     let mut r = Array2::zeros((n, n));
@@ -62,7 +63,7 @@ pub struct SVD<A> {
 
 /// Compute SVD using power iteration (simplified implementation)
 /// For production use, integrate with LAPACK
-pub fn svd_simple<A: Float>(mat: &Array2<A>, max_rank: Option<usize>) -> Result<SVD<A>> {
+pub fn svd_simple<A: Float + ScalarOperand + Sum>(mat: &Array2<A>, max_rank: Option<usize>) -> Result<SVD<A>> {
     let (m, n) = (mat.nrows(), mat.ncols());
     let k = max_rank.unwrap_or_else(|| m.min(n));
 
@@ -84,7 +85,7 @@ pub fn svd_simple<A: Float>(mat: &Array2<A>, max_rank: Option<usize>) -> Result<
 }
 
 /// Cholesky decomposition for positive definite matrices
-pub fn cholesky<A: Float>(mat: &Array2<A>) -> Result<Array2<A>> {
+pub fn cholesky<A: Float + ScalarOperand + Sum>(mat: &Array2<A>) -> Result<Array2<A>> {
     if mat.nrows() != mat.ncols() {
         return Err(RustyAIError::InvalidShape {
             expected: "square matrix".to_string(),

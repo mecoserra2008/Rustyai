@@ -1,11 +1,12 @@
 //! Linear system solvers
 
 use crate::error::{Result, RustyAIError};
-use ndarray::{Array1, Array2};
+use ndarray::{Array1, Array2, ScalarOperand};
 use num_traits::Float;
+use std::iter::Sum;
 
 /// Solve a linear system Ax = b using Gaussian elimination
-pub fn solve<A: Float>(a: &Array2<A>, b: &Array1<A>) -> Result<Array1<A>> {
+pub fn solve<A: Float + ScalarOperand + Sum>(a: &Array2<A>, b: &Array1<A>) -> Result<Array1<A>> {
     if a.nrows() != a.ncols() {
         return Err(RustyAIError::InvalidShape {
             expected: "square matrix".to_string(),
@@ -80,7 +81,7 @@ pub fn solve<A: Float>(a: &Array2<A>, b: &Array1<A>) -> Result<Array1<A>> {
 }
 
 /// Solve least squares problem: minimize ||Ax - b||^2
-pub fn lstsq<A: Float>(a: &Array2<A>, b: &Array1<A>) -> Result<Array1<A>> {
+pub fn lstsq<A: Float + ScalarOperand + Sum>(a: &Array2<A>, b: &Array1<A>) -> Result<Array1<A>> {
     // Use normal equations: A^T A x = A^T b
     let at = a.t();
     let ata = at.dot(a);

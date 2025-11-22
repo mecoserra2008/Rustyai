@@ -13,9 +13,10 @@ pub mod robust;
 pub mod tests;
 
 use crate::error::Result;
-use ndarray::{Array1, Array2};
+use ndarray::{Array1, Array2, ScalarOperand};
 use num_traits::Float;
 use serde::{Deserialize, Serialize};
+use std::iter::Sum;
 
 /// Ordinary Least Squares with robust inference
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -34,7 +35,10 @@ pub struct OLS<A> {
     fit_intercept: bool,
 }
 
-impl<A: Float> OLS<A> {
+impl<A> OLS<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Create a new OLS estimator
     pub fn new() -> Self {
         Self {
@@ -87,7 +91,10 @@ impl<A: Float> OLS<A> {
     }
 }
 
-impl<A: Float> Default for OLS<A> {
+impl<A> Default for OLS<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     fn default() -> Self {
         Self::new()
     }
@@ -102,7 +109,10 @@ pub struct WLS<A> {
     ols: OLS<A>,
 }
 
-impl<A: Float> WLS<A> {
+impl<A> WLS<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Create a new WLS estimator with given weights
     pub fn new(weights: Array1<A>) -> Self {
         Self {
@@ -128,7 +138,10 @@ pub struct GLS<A> {
     coef: Option<Array1<A>>,
 }
 
-impl<A: Float> GLS<A> {
+impl<A> GLS<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Create a new GLS estimator
     pub fn new() -> Self {
         Self {
@@ -144,7 +157,10 @@ impl<A: Float> GLS<A> {
     }
 }
 
-impl<A: Float> Default for GLS<A> {
+impl<A> Default for GLS<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     fn default() -> Self {
         Self::new()
     }

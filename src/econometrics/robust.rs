@@ -9,8 +9,9 @@
 //! - White test
 
 use crate::error::Result;
-use ndarray::{Array1, Array2};
+use ndarray::{Array1, Array2, ScalarOperand};
 use num_traits::Float;
+use std::iter::Sum;
 
 /// Type of robust covariance estimator
 #[derive(Debug, Clone, Copy)]
@@ -30,7 +31,7 @@ pub enum RobustCovarianceType {
 }
 
 /// Compute robust covariance matrix
-pub fn robust_covariance<A: Float>(
+pub fn robust_covariance<A: Float + ScalarOperand + Sum>(
     X: &Array2<A>,
     residuals: &Array1<A>,
     cov_type: RobustCovarianceType,
@@ -78,7 +79,10 @@ pub struct BreuschPaganTest<A> {
     pub p_value: A,
 }
 
-impl<A: Float> BreuschPaganTest<A> {
+impl<A> BreuschPaganTest<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Perform Breusch-Pagan test
     ///
     /// H0: Homoskedasticity
@@ -110,7 +114,10 @@ pub struct WhiteTest<A> {
     pub p_value: A,
 }
 
-impl<A: Float> WhiteTest<A> {
+impl<A> WhiteTest<A>
+where
+    A: Float + ScalarOperand + Sum,
+{
     /// Perform White test
     ///
     /// H0: Homoskedasticity
@@ -128,7 +135,7 @@ impl<A: Float> WhiteTest<A> {
 }
 
 /// Compute clustered standard errors
-pub fn clustered_covariance<A: Float>(
+pub fn clustered_covariance<A: Float + ScalarOperand + Sum>(
     X: &Array2<A>,
     residuals: &Array1<A>,
     clusters: &Array1<usize>,

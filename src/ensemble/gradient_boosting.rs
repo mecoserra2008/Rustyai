@@ -4,6 +4,7 @@ use super::DecisionTree;
 use crate::error::{Result, RustyAIError};
 use ndarray::{Array1, Array2};
 use num_traits::Float;
+use std::iter::Sum;
 use serde::{Deserialize, Serialize};
 
 /// Gradient Boosting for regression
@@ -16,7 +17,7 @@ pub struct GradientBoosting<A> {
     min_samples_split: usize,
 }
 
-impl<A: Float> GradientBoosting<A> {
+impl<A: Float + ScalarOperand + Sum> GradientBoosting<A> {
     /// Create a new GradientBoosting model
     pub fn new() -> Self {
         Self {
@@ -78,7 +79,7 @@ impl<A: Float> GradientBoosting<A> {
     }
 }
 
-impl<A: Float> Default for GradientBoosting<A> {
+impl<A: Float + ScalarOperand + Sum> Default for GradientBoosting<A> {
     fn default() -> Self {
         Self::new()
     }

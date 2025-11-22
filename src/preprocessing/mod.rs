@@ -25,7 +25,7 @@ pub struct StandardScaler<A> {
     with_std: bool,
 }
 
-impl<A: Float> StandardScaler<A> {
+impl<A: Float + ScalarOperand + Sum> StandardScaler<A> {
     /// Create a new StandardScaler
     pub fn new() -> Self {
         Self {
@@ -148,7 +148,7 @@ impl<A: Float> StandardScaler<A> {
     }
 }
 
-impl<A: Float> Default for StandardScaler<A> {
+impl<A: Float + ScalarOperand + Sum> Default for StandardScaler<A> {
     fn default() -> Self {
         Self::new()
     }
@@ -167,7 +167,7 @@ pub struct MinMaxScaler<A> {
     feature_max: A,
 }
 
-impl<A: Float> MinMaxScaler<A> {
+impl<A: Float + ScalarOperand + Sum> MinMaxScaler<A> {
     /// Create a new MinMaxScaler with range [0, 1]
     pub fn new() -> Self {
         Self {
@@ -241,7 +241,7 @@ impl<A: Float> MinMaxScaler<A> {
     }
 }
 
-impl<A: Float> Default for MinMaxScaler<A> {
+impl<A: Float + ScalarOperand + Sum> Default for MinMaxScaler<A> {
     fn default() -> Self {
         Self::new()
     }
@@ -262,7 +262,7 @@ pub enum NormType {
     Max,
 }
 
-impl<A: Float> Normalizer<A> {
+impl<A: Float + ScalarOperand + Sum> Normalizer<A> {
     /// Create a new Normalizer with L2 norm
     pub fn new() -> Self {
         Self {
@@ -302,7 +302,7 @@ impl<A: Float> Normalizer<A> {
     }
 }
 
-impl<A: Float> Default for Normalizer<A> {
+impl<A: Float + ScalarOperand + Sum> Default for Normalizer<A> {
     fn default() -> Self {
         Self::new()
     }
