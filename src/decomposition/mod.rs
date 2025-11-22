@@ -1,13 +1,10 @@
 //! Matrix decomposition and dimensionality reduction
+//!
+//! Comprehensive dimensionality reduction methods:
+//! - PCA (Principal Component Analysis)
+//! - t-SNE (t-Distributed Stochastic Neighbor Embedding)
+//! - UMAP (Uniform Manifold Approximation and Projection)
 
-use crate::error::Result;
+pub mod advanced;
 
-/// Principal Component Analysis
-pub struct PCA {
-    // To be implemented
-}
-
-/// Singular Value Decomposition
-pub struct TruncatedSVD {
-    // To be implemented
-}
+pub use advanced::{PCA, TSNE, UMAP};
