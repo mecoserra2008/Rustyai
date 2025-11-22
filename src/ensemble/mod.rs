@@ -12,7 +12,7 @@ use serde::{Deserialize, Serialize};
 pub mod random_forest;
 pub mod gradient_boosting;
 
-pub use random_forest::RandomForest;
+pub use random_forest::{RandomForest, RandomForestClassifier, RandomForestRegressor};
 pub use gradient_boosting::GradientBoosting;
 
 /// Decision tree node

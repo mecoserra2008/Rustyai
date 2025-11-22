@@ -13,6 +13,9 @@ use std::iter::Sum;
 pub mod encoding;
 pub mod imputation;
 
+// Re-export encoding types
+pub use encoding::OneHotEncoder;
+
 /// Standard scaler - standardizes features by removing mean and scaling to unit variance
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct StandardScaler<A> {

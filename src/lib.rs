@@ -84,6 +84,7 @@ pub mod preprocessing;
 pub mod feature_selection;
 pub mod model_selection;
 pub mod linear_models;
+pub mod tree;
 pub mod ensemble;
 pub mod svm;
 pub mod cluster;
@@ -136,7 +137,8 @@ pub mod prelude {
 
     // Models
     pub use crate::linear_models::{LinearRegression, LogisticRegression, Ridge, Lasso};
-    pub use crate::ensemble::{RandomForest, GradientBoosting};
+    pub use crate::tree::{DecisionTreeClassifier, DecisionTreeRegressor, Criterion};
+    pub use crate::ensemble::{RandomForest, RandomForestClassifier, RandomForestRegressor, GradientBoosting};
     pub use crate::cluster::{
         KMeans, dbscan, hierarchical_clustering, spectral_clustering, mean_shift,
         DBSCANResult, HierarchicalResult, Linkage,

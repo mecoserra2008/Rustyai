@@ -18,7 +18,7 @@ impl OneHotEncoder {
     }
 
     /// Fit the encoder to the data
-    pub fn fit(mut self, X: &Array2<usize>) -> Result<Self> {
+    pub fn fit(&mut self, X: &Array2<usize>) -> Result<()> {
         let mut categories = Vec::new();
 
         for col_idx in 0..X.ncols() {
@@ -34,7 +34,7 @@ impl OneHotEncoder {
         }
 
         self.categories = Some(categories);
-        Ok(self)
+        Ok(())
     }
 
     /// Transform the data
@@ -64,10 +64,21 @@ impl OneHotEncoder {
     }
 
     /// Fit and transform in one step
-    pub fn fit_transform(self, X: &Array2<usize>) -> Result<(Self, Array2<f64>)> {
-        let fitted = self.fit(X)?;
-        let transformed = fitted.transform(X)?;
-        Ok((fitted, transformed))
+    pub fn fit_transform(&mut self, X: &Array2<usize>) -> Result<Array2<f64>> {
+        self.fit(X)?;
+        self.transform(X)
+    }
+
+    /// Get the number of features after encoding
+    pub fn n_features_out(&self) -> Option<usize> {
+        self.categories.as_ref().map(|cats| {
+            cats.iter().map(|c| c.len()).sum()
+        })
+    }
+
+    /// Get the categories for each feature
+    pub fn get_categories(&self) -> Option<&Vec<Vec<usize>>> {
+        self.categories.as_ref()
     }
 }
 
