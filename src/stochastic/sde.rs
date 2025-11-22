@@ -1,7 +1,7 @@
 //! Stochastic Differential Equations solvers
 
 use crate::error::Result;
-use ndarray::Array1;
+use ndarray::{Array1, ScalarOperand};
 use num_traits::Float;
 use std::iter::Sum;
 

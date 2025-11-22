@@ -1,5 +1,6 @@
 //! Option pricing models
 
+use ndarray::ScalarOperand;
 use num_traits::Float;
 use std::iter::Sum;
 

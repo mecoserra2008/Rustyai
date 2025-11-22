@@ -4,7 +4,7 @@
 //! and other optimization methods for machine learning.
 
 use crate::error::{Result, RustyAIError};
-use ndarray::{Array1, Array2};
+use ndarray::{Array1, Array2, ScalarOperand};
 use num_traits::Float;
 use std::iter::Sum;
 

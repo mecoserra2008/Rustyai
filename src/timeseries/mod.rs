@@ -11,9 +11,10 @@
 //! - Forecasting and diagnostics
 
 use crate::error::{Result, RustyAIError};
-use ndarray::{Array1, Array2};
+use ndarray::{Array1, Array2, ScalarOperand};
 use num_traits::Float;
 use serde::{Deserialize, Serialize};
+use std::iter::Sum;
 
 /// ARIMA model - Autoregressive Integrated Moving Average
 #[derive(Debug, Clone, Serialize, Deserialize)]

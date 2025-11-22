@@ -1,7 +1,7 @@
 //! Coordinate descent optimization
 
 use super::{ObjectiveFunction, OptimizationResult};
-use ndarray::Array1;
+use ndarray::{Array1, ScalarOperand};
 use num_traits::Float;
 use std::iter::Sum;
 
@@ -33,7 +33,7 @@ pub fn coordinate_descent<A, F>(
     config: &CoordinateDescentConfig<A>,
 ) -> OptimizationResult<A>
 where
-    A: Float,
+    A: Float + ScalarOperand + Sum,
     F: ObjectiveFunction<A>,
 {
     let mut x = x0.clone();

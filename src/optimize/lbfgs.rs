@@ -33,7 +33,7 @@ pub fn lbfgs<A, F>(
     config: &LBFGSConfig<A>,
 ) -> OptimizationResult<A>
 where
-    A: Float,
+    A: Float + ScalarOperand + Sum,
     F: ObjectiveFunction<A>,
 {
     let mut x = x0.clone();

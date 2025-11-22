@@ -16,10 +16,11 @@ pub mod monte_carlo;
 pub mod option_pricing;
 
 use crate::error::Result;
-use ndarray::{Array1, Array2};
+use ndarray::{Array1, Array2, ScalarOperand};
 use num_traits::Float;
 use rand::Rng;
 use rand_distr::{Distribution, Normal, StandardNormal};
+use std::iter::Sum;
 
 /// Brownian Motion (Wiener Process)
 pub struct BrownianMotion<A> {

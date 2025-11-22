@@ -3,7 +3,7 @@
 //! Includes Random Forests, Gradient Boosting, AdaBoost, and stacking ensembles.
 
 use crate::error::{Result, RustyAIError};
-use ndarray::{Array1, Array2};
+use ndarray::{Array1, Array2, ScalarOperand};
 use num_traits::Float;
 use std::iter::Sum;
 use rand::Rng;

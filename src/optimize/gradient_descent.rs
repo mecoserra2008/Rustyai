@@ -39,7 +39,7 @@ pub fn gradient_descent<A, F>(
     config: &GradientDescentConfig<A>,
 ) -> OptimizationResult<A>
 where
-    A: Float,
+    A: Float + ScalarOperand + Sum,
     F: ObjectiveFunction<A>,
 {
     let mut x = x0.clone();
@@ -118,7 +118,7 @@ pub fn adam<A, F>(
     config: &AdamConfig<A>,
 ) -> OptimizationResult<A>
 where
-    A: Float,
+    A: Float + ScalarOperand + Sum,
     F: ObjectiveFunction<A>,
 {
     let mut x = x0.clone();

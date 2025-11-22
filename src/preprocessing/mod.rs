@@ -5,9 +5,10 @@
 
 use crate::error::{Result, RustyAIError};
 use crate::traits::Transformer;
-use ndarray::{Array1, Array2, Axis};
+use ndarray::{Array1, Array2, Axis, ScalarOperand};
 use num_traits::Float;
 use serde::{Deserialize, Serialize};
+use std::iter::Sum;
 
 pub mod encoding;
 pub mod imputation;

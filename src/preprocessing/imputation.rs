@@ -1,7 +1,7 @@
 //! Missing value imputation strategies
 
 use crate::error::{Result, RustyAIError};
-use ndarray::{Array1, Array2, Axis};
+use ndarray::{Array1, Array2, Axis, ScalarOperand};
 use num_traits::Float;
 use std::iter::Sum;
 

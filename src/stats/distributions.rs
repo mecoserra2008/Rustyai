@@ -1,5 +1,6 @@
 //! Probability distributions
 
+use ndarray::ScalarOperand;
 use num_traits::Float;
 use std::iter::Sum;
 use rand::Rng;

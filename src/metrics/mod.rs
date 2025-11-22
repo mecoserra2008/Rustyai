@@ -2,7 +2,7 @@
 //!
 //! Includes metrics for regression, classification, and clustering.
 
-use ndarray::{Array1, Array2};
+use ndarray::{Array1, Array2, ScalarOperand};
 use num_traits::Float;
 use std::iter::Sum;
 use std::collections::HashMap;

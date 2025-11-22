@@ -1,7 +1,7 @@
 //! Categorical encoding methods
 
 use crate::error::{Result, RustyAIError};
-use ndarray::{ScalarOperand, Array1, Array2, ScalarOperand};
+use ndarray::{Array1, Array2, ScalarOperand};
 use std::collections::HashMap;
 
 /// One-hot encoder for categorical variables
