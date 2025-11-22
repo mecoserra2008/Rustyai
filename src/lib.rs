@@ -98,6 +98,11 @@ pub mod autograd;
 // Time series module
 pub mod timeseries;
 
+// Advanced statistical modules
+pub mod econometrics;
+pub mod spatial;
+pub mod stochastic;
+
 // Utility modules
 pub mod metrics;
 pub mod pipeline;
