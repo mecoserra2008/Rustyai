@@ -5,6 +5,7 @@ use num_traits::Float;
 use std::iter::Sum;
 
 use super::{mean, std, variance};
+use super::distributions::{t_test_p_value, f_test_p_value};
 
 /// Result of a t-test
 #[derive(Debug, Clone)]
@@ -26,9 +27,10 @@ pub fn ttest_1samp<A: Float + ScalarOperand + Sum>(data: &Array1<A>, popmean: A)
     let statistic = (sample_mean - popmean) / (sample_std / A::from(n).unwrap().sqrt());
     let df = n - 1;
 
-    // Simple p-value approximation (for demonstration)
-    // In production, use proper t-distribution CDF
-    let pvalue = A::from(2.0).unwrap() * (A::one() - A::from(0.95).unwrap()); // Placeholder
+    // Proper t-distribution p-value
+    let t_val = statistic.to_f64().unwrap_or(0.0);
+    let df_f64 = df as f64;
+    let pvalue = A::from(t_test_p_value(t_val, df_f64)).unwrap();
 
     TTestResult {
         statistic,
@@ -57,7 +59,11 @@ pub fn ttest_ind<A: Float + ScalarOperand + Sum>(a: &Array1<A>, b: &Array1<A>) -
             * (A::one() / A::from(n1).unwrap() + A::one() / A::from(n2).unwrap()).sqrt());
 
     let df = n1 + n2 - 2;
-    let pvalue = A::from(0.05).unwrap(); // Placeholder
+
+    // Proper t-distribution p-value
+    let t_val = statistic.to_f64().unwrap_or(0.0);
+    let df_f64 = df as f64;
+    let pvalue = A::from(t_test_p_value(t_val, df_f64)).unwrap();
 
     TTestResult {
         statistic,
@@ -84,7 +90,12 @@ pub fn f_test<A: Float + ScalarOperand + Sum>(a: &Array1<A>, b: &Array1<A>) -> F
 
     let statistic = if var1 > var2 { var1 / var2 } else { var2 / var1 };
     let df = (a.len() - 1, b.len() - 1);
-    let pvalue = A::from(0.05).unwrap(); // Placeholder
+
+    // Proper F-distribution p-value
+    let f_val = statistic.to_f64().unwrap_or(1.0);
+    let df1_f64 = df.0 as f64;
+    let df2_f64 = df.1 as f64;
+    let pvalue = A::from(f_test_p_value(f_val, df1_f64, df2_f64)).unwrap();
 
     FTestResult {
         statistic,
