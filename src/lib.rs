@@ -138,7 +138,10 @@ pub mod prelude {
     // Models
     pub use crate::linear_models::{LinearRegression, LogisticRegression, Ridge, Lasso};
     pub use crate::tree::{DecisionTreeClassifier, DecisionTreeRegressor, Criterion};
-    pub use crate::ensemble::{RandomForest, RandomForestClassifier, RandomForestRegressor, GradientBoosting};
+    pub use crate::ensemble::{
+        RandomForest, RandomForestClassifier, RandomForestRegressor,
+        GradientBoosting, GradientBoostingRegressor, GradientBoostingClassifier,
+    };
     pub use crate::cluster::{
         KMeans, dbscan, hierarchical_clustering, spectral_clustering, mean_shift,
         DBSCANResult, HierarchicalResult, Linkage,

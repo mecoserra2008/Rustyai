@@ -13,7 +13,7 @@ pub mod random_forest;
 pub mod gradient_boosting;
 
 pub use random_forest::{RandomForest, RandomForestClassifier, RandomForestRegressor};
-pub use gradient_boosting::GradientBoosting;
+pub use gradient_boosting::{GradientBoosting, GradientBoostingRegressor, GradientBoostingClassifier};
 
 /// Decision tree node
 #[derive(Debug, Clone, Serialize, Deserialize)]
