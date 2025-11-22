@@ -9,6 +9,9 @@
 //! - Structural Time Series Models
 //! - Exponential Smoothing (Holt-Winters)
 //! - Forecasting and diagnostics
+//! - Structural breaks detection (Chow, CUSUM, Bai-Perron)
+
+pub mod structural_breaks;
 
 use crate::error::{Result, RustyAIError};
 use ndarray::{Array1, Array2, ScalarOperand};

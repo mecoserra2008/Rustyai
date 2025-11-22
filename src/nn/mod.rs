@@ -13,6 +13,7 @@ pub mod activations;
 pub mod loss;
 pub mod optimizers;
 pub mod regularization;
+pub mod attention;
 
 use crate::error::{Result, RustyAIError};
 use ndarray::{Array1, Array2, ScalarOperand};
