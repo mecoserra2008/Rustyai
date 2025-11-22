@@ -61,7 +61,7 @@ impl<A: Float + ScalarOperand + Sum> SimpleImputer<A> {
 
             statistics[col_idx] = match self.strategy {
                 ImputationStrategy::Mean => {
-                    valid_values.iter().sum::<A>() / A::from(valid_values.len()).unwrap()
+                    valid_values.iter().copied().sum::<A>() / A::from(valid_values.len()).unwrap()
                 }
                 ImputationStrategy::Median => {
                     let mut sorted = valid_values.clone();
@@ -75,7 +75,7 @@ impl<A: Float + ScalarOperand + Sum> SimpleImputer<A> {
                 }
                 ImputationStrategy::Mode => {
                     // For simplicity, use mean for numeric data
-                    valid_values.iter().sum::<A>() / A::from(valid_values.len()).unwrap()
+                    valid_values.iter().copied().sum::<A>() / A::from(valid_values.len()).unwrap()
                 }
                 ImputationStrategy::Constant => self.fill_value.unwrap_or(A::zero()),
             };

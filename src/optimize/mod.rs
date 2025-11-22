@@ -52,7 +52,7 @@ pub fn backtracking_line_search<A, F>(
     c: A,
 ) -> A
 where
-    A: Float,
+    A: Float + ScalarOperand + Sum,
     F: ObjectiveFunction<A>,
 {
     let mut alpha = alpha;
@@ -76,7 +76,7 @@ where
 /// Compute numerical gradient using finite differences
 pub fn numerical_gradient<A, F>(f: &F, x: &Array1<A>, epsilon: A) -> Array1<A>
 where
-    A: Float,
+    A: Float + ScalarOperand + Sum,
     F: Fn(&Array1<A>) -> A,
 {
     let mut grad = Array1::zeros(x.len());

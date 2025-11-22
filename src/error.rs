@@ -76,3 +76,12 @@ impl From<&str> for RustyAIError {
         RustyAIError::Other(s.to_string())
     }
 }
+
+impl From<ndarray::ShapeError> for RustyAIError {
+    fn from(e: ndarray::ShapeError) -> Self {
+        RustyAIError::InvalidShape {
+            expected: "valid shape".to_string(),
+            got: e.to_string(),
+        }
+    }
+}

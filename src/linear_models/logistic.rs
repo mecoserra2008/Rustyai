@@ -72,9 +72,9 @@ impl<A: Float + ScalarOperand + Sum> LogisticRegression<A> {
             }
 
             let n = A::from(X.nrows()).unwrap();
-            grad = grad.mapv(|g| g / n);
+            grad = grad.mapv(|g: A| g / n);
 
-            coef = &coef - &grad.mapv(|g| g * self.learning_rate);
+            coef = &coef - &grad.mapv(|g: A| g * self.learning_rate);
         }
 
         self.intercept = Some(coef[0]);

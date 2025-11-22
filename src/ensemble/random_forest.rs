@@ -82,7 +82,7 @@ impl<A: Float + ScalarOperand + Sum> RandomForest<A> {
         }
 
         let n_trees = A::from(self.trees.len()).unwrap();
-        Ok(predictions.mapv(|p| p / n_trees))
+        Ok(predictions.mapv(|p: A| p / n_trees))
     }
 }
 

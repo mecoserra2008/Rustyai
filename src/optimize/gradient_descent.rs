@@ -141,19 +141,19 @@ where
         }
 
         // Update biased first moment estimate
-        m = m.mapv(|mi| mi * config.beta1)
-            + grad.mapv(|gi| gi * (A::one() - config.beta1));
+        m = m.mapv(|mi: A| mi * config.beta1)
+            + grad.mapv(|gi: A| gi * (A::one() - config.beta1));
 
         // Update biased second raw moment estimate
-        v = v.mapv(|vi| vi * config.beta2)
-            + grad.mapv(|gi| gi * gi * (A::one() - config.beta2));
+        v = v.mapv(|vi: A| vi * config.beta2)
+            + grad.mapv(|gi: A| gi * gi * (A::one() - config.beta2));
 
         // Compute bias-corrected first moment estimate
         let t_float = A::from(t).unwrap();
-        let m_hat = m.mapv(|mi| mi / (A::one() - config.beta1.powf(t_float)));
+        let m_hat = m.mapv(|mi: A| mi / (A::one() - config.beta1.powf(t_float)));
 
         // Compute bias-corrected second raw moment estimate
-        let v_hat = v.mapv(|vi| vi / (A::one() - config.beta2.powf(t_float)));
+        let v_hat = v.mapv(|vi: A| vi / (A::one() - config.beta2.powf(t_float)));
 
         // Update parameters
         let update: Array1<A> = m_hat.iter()

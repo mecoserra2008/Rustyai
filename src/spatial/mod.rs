@@ -136,7 +136,7 @@ where
         let mean = x.sum() / n;
 
         // Compute S0 = Σ_i Σ_j w_ij
-        let S0: A = W.W.iter().sum();
+        let S0: A = W.W.iter().copied().sum();
 
         // Numerator: Σ_i Σ_j w_ij (x_i - x̄)(x_j - x̄)
         let mut numerator = A::zero();
@@ -198,7 +198,7 @@ where
         let n = A::from(x.len()).unwrap();
         let mean = x.sum() / n;
 
-        let S0: A = W.W.iter().sum();
+        let S0: A = W.W.iter().copied().sum();
 
         // Numerator: Σ_i Σ_j w_ij (x_i - x_j)²
         let mut numerator = A::zero();

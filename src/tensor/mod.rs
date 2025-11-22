@@ -111,7 +111,7 @@ where
     /// Dot product with another 1D tensor
     pub fn dot(&self, other: &Self) -> A
     where
-        A: NumAssign,
+        A: NumAssign + 'static,
     {
         self.data.dot(&other.data)
     }
@@ -139,7 +139,7 @@ where
     /// Matrix multiplication
     pub fn matmul(&self, other: &Self) -> Self
     where
-        A: NumAssign,
+        A: NumAssign + 'static,
     {
         Self::new(self.data.dot(&other.data))
     }

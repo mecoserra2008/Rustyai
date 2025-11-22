@@ -6,7 +6,7 @@
 use crate::error::{Result, RustyAIError};
 use crate::traits::Transformer;
 use ndarray::{Array1, Array2, Axis, ScalarOperand};
-use num_traits::Float;
+use num_traits::{Float, FromPrimitive};
 use serde::{Deserialize, Serialize};
 use std::iter::Sum;
 
@@ -26,7 +26,7 @@ pub struct StandardScaler<A> {
     with_std: bool,
 }
 
-impl<A: Float + ScalarOperand + Sum> StandardScaler<A> {
+impl<A: Float + ScalarOperand + Sum + FromPrimitive> StandardScaler<A> {
     /// Create a new StandardScaler
     pub fn new() -> Self {
         Self {
@@ -149,7 +149,7 @@ impl<A: Float + ScalarOperand + Sum> StandardScaler<A> {
     }
 }
 
-impl<A: Float + ScalarOperand + Sum> Default for StandardScaler<A> {
+impl<A: Float + ScalarOperand + Sum + FromPrimitive> Default for StandardScaler<A> {
     fn default() -> Self {
         Self::new()
     }
