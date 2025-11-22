@@ -28,8 +28,10 @@ impl<A: Float + ScalarOperand + Sum> Ridge<A> {
         }
     }
 
-    /// Fit the model
-    pub fn fit(mut self, X: &Array2<A>, y: &Array1<A>) -> Result<Self> {
+    /// Fit the Ridge regression model
+    ///
+    /// Solves: (X^T X + alpha * I) beta = X^T y
+    pub fn fit(&mut self, X: &Array2<A>, y: &Array1<A>) -> Result<()> {
         if X.nrows() != y.len() {
             return Err(RustyAIError::DimensionMismatch(format!(
                 "X has {} samples but y has {} samples",
@@ -54,7 +56,38 @@ impl<A: Float + ScalarOperand + Sum> Ridge<A> {
         self.coef = Some(coef);
         self.intercept = Some(A::zero());
 
-        Ok(self)
+        Ok(())
+    }
+
+    /// Compute R² score
+    pub fn score(&self, X: &Array2<A>, y: &Array1<A>) -> Result<A> {
+        let predictions = self.predict(X)?;
+        let y_mean = y.sum() / A::from(y.len()).unwrap();
+
+        let ss_res: A = y.iter().zip(predictions.iter())
+            .map(|(&true_y, &pred_y)| {
+                let diff = true_y - pred_y;
+                diff * diff
+            })
+            .sum();
+
+        let ss_tot: A = y.iter()
+            .map(|&yi| {
+                let diff = yi - y_mean;
+                diff * diff
+            })
+            .sum();
+
+        if ss_tot == A::zero() {
+            return Ok(A::one());
+        }
+
+        Ok(A::one() - ss_res / ss_tot)
+    }
+
+    /// Check if model is fitted
+    pub fn is_fitted(&self) -> bool {
+        self.coef.is_some()
     }
 
     /// Predict
@@ -105,8 +138,8 @@ impl<A: Float + ScalarOperand + Sum> Lasso<A> {
         }
     }
 
-    /// Fit using coordinate descent
-    pub fn fit(mut self, X: &Array2<A>, y: &Array1<A>) -> Result<Self> {
+    /// Fit Lasso model using coordinate descent
+    pub fn fit(&mut self, X: &Array2<A>, y: &Array1<A>) -> Result<()> {
         if X.nrows() != y.len() {
             return Err(RustyAIError::DimensionMismatch(format!(
                 "X has {} samples but y has {} samples",
@@ -145,7 +178,38 @@ impl<A: Float + ScalarOperand + Sum> Lasso<A> {
         self.coef = Some(coef);
         self.intercept = Some(A::zero());
 
-        Ok(self)
+        Ok(())
+    }
+
+    /// Compute R² score
+    pub fn score(&self, X: &Array2<A>, y: &Array1<A>) -> Result<A> {
+        let predictions = self.predict(X)?;
+        let y_mean = y.sum() / A::from(y.len()).unwrap();
+
+        let ss_res: A = y.iter().zip(predictions.iter())
+            .map(|(&true_y, &pred_y)| {
+                let diff = true_y - pred_y;
+                diff * diff
+            })
+            .sum();
+
+        let ss_tot: A = y.iter()
+            .map(|&yi| {
+                let diff = yi - y_mean;
+                diff * diff
+            })
+            .sum();
+
+        if ss_tot == A::zero() {
+            return Ok(A::one());
+        }
+
+        Ok(A::one() - ss_res / ss_tot)
+    }
+
+    /// Check if model is fitted
+    pub fn is_fitted(&self) -> bool {
+        self.coef.is_some()
     }
 
     /// Predict

@@ -151,6 +151,109 @@ pub fn confusion_matrix(y_true: &Array1<usize>, y_pred: &Array1<usize>) -> Array
     matrix
 }
 
+/// Adjusted R² score (accounts for number of predictors)
+pub fn adjusted_r2_score<A: Float + ScalarOperand + Sum>(
+    y_true: &Array1<A>,
+    y_pred: &Array1<A>,
+    n_features: usize,
+) -> A {
+    let r2 = r2_score(y_true, y_pred);
+    let n = A::from(y_true.len()).unwrap();
+    let p = A::from(n_features).unwrap();
+
+    if n <= p + A::one() {
+        return A::nan();
+    }
+
+    A::one() - (A::one() - r2) * (n - A::one()) / (n - p - A::one())
+}
+
+/// Log loss (binary cross-entropy)
+pub fn log_loss(y_true: &Array1<f64>, y_pred_proba: &Array1<f64>) -> f64 {
+    if y_true.len() != y_pred_proba.len() {
+        return f64::NAN;
+    }
+
+    let eps = 1e-15;
+    let mut loss = 0.0;
+
+    for (&yt, &yp) in y_true.iter().zip(y_pred_proba.iter()) {
+        // Clip predictions to avoid log(0)
+        let yp_clipped = yp.max(eps).min(1.0 - eps);
+        loss += yt * yp_clipped.ln() + (1.0 - yt) * (1.0 - yp_clipped).ln();
+    }
+
+    -loss / y_true.len() as f64
+}
+
+/// Matthews Correlation Coefficient (MCC) for binary classification
+pub fn matthews_corrcoef(y_true: &Array1<f64>, y_pred: &Array1<f64>) -> f64 {
+    let mut tp = 0;
+    let mut tn = 0;
+    let mut fp = 0;
+    let mut fn_count = 0;
+
+    for (&yt, &yp) in y_true.iter().zip(y_pred.iter()) {
+        let yt_bin = yt > 0.5;
+        let yp_bin = yp > 0.5;
+
+        match (yt_bin, yp_bin) {
+            (true, true) => tp += 1,
+            (false, false) => tn += 1,
+            (false, true) => fp += 1,
+            (true, false) => fn_count += 1,
+        }
+    }
+
+    let numerator = (tp * tn - fp * fn_count) as f64;
+    let denominator = ((tp + fp) * (tp + fn_count) * (tn + fp) * (tn + fn_count)) as f64;
+
+    if denominator == 0.0 {
+        return 0.0;
+    }
+
+    numerator / denominator.sqrt()
+}
+
+/// Classification report - compute multiple metrics at once
+pub struct ClassificationReport {
+    pub accuracy: f64,
+    pub precision: f64,
+    pub recall: f64,
+    pub f1: f64,
+}
+
+impl ClassificationReport {
+    pub fn new(y_true: &Array1<f64>, y_pred: &Array1<f64>) -> Self {
+        Self {
+            accuracy: accuracy(y_true, y_pred),
+            precision: precision(y_true, y_pred),
+            recall: recall(y_true, y_pred),
+            f1: f1_score(y_true, y_pred),
+        }
+    }
+}
+
+/// Regression report - compute multiple metrics at once
+pub struct RegressionReport<A: Float> {
+    pub mse: A,
+    pub rmse: A,
+    pub mae: A,
+    pub r2: A,
+}
+
+impl<A: Float + ScalarOperand + Sum> RegressionReport<A> {
+    pub fn new(y_true: &Array1<A>, y_pred: &Array1<A>) -> Self {
+        let mse = mean_squared_error(y_true, y_pred);
+        Self {
+            mse,
+            rmse: mse.sqrt(),
+            mae: mean_absolute_error(y_true, y_pred),
+            r2: r2_score(y_true, y_pred),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

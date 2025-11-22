@@ -50,7 +50,7 @@ impl<A: Float + ScalarOperand + Sum + FromPrimitive> StandardScaler<A> {
     }
 
     /// Fit the scaler to the data
-    pub fn fit(mut self, X: &Array2<A>) -> Result<Self> {
+    pub fn fit(&mut self, X: &Array2<A>) -> Result<()> {
         if X.is_empty() {
             return Err(RustyAIError::EmptyData);
         }
@@ -84,7 +84,7 @@ impl<A: Float + ScalarOperand + Sum + FromPrimitive> StandardScaler<A> {
             self.std = Some(std);
         }
 
-        Ok(self)
+        Ok(())
     }
 
     /// Transform the data
@@ -115,10 +115,9 @@ impl<A: Float + ScalarOperand + Sum + FromPrimitive> StandardScaler<A> {
     }
 
     /// Fit and transform in one step
-    pub fn fit_transform_method(self, X: &Array2<A>) -> Result<(Self, Array2<A>)> {
-        let fitted = self.fit(X)?;
-        let transformed = fitted.transform(X);
-        Ok((fitted, transformed))
+    pub fn fit_transform(&mut self, X: &Array2<A>) -> Result<Array2<A>> {
+        self.fit(X)?;
+        Ok(self.transform(X))
     }
 
     /// Inverse transform the data
@@ -187,7 +186,7 @@ impl<A: Float + ScalarOperand + Sum> MinMaxScaler<A> {
     }
 
     /// Fit the scaler to the data
-    pub fn fit(mut self, X: &Array2<A>) -> Result<Self> {
+    pub fn fit(&mut self, X: &Array2<A>) -> Result<()> {
         if X.is_empty() {
             return Err(RustyAIError::EmptyData);
         }
@@ -209,7 +208,7 @@ impl<A: Float + ScalarOperand + Sum> MinMaxScaler<A> {
 
         self.min = Some(min);
         self.max = Some(max);
-        Ok(self)
+        Ok(())
     }
 
     /// Transform the data
@@ -235,10 +234,9 @@ impl<A: Float + ScalarOperand + Sum> MinMaxScaler<A> {
     }
 
     /// Fit and transform in one step
-    pub fn fit_transform_method(self, X: &Array2<A>) -> Result<(Self, Array2<A>)> {
-        let fitted = self.fit(X)?;
-        let transformed = fitted.transform(X);
-        Ok((fitted, transformed))
+    pub fn fit_transform(&mut self, X: &Array2<A>) -> Result<Array2<A>> {
+        self.fit(X)?;
+        Ok(self.transform(X))
     }
 }
 
@@ -317,7 +315,8 @@ mod tests {
     #[test]
     fn test_standard_scaler() {
         let X = Array2::from_shape_vec((3, 2), vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]).unwrap();
-        let scaler = StandardScaler::new().fit(&X).unwrap();
+        let mut scaler = StandardScaler::new();
+        scaler.fit(&X).unwrap();
         let X_scaled = scaler.transform(&X);
 
         // Check that mean is approximately 0
@@ -329,7 +328,8 @@ mod tests {
     #[test]
     fn test_minmax_scaler() {
         let X = Array2::from_shape_vec((3, 2), vec![1.0, 2.0, 3.0, 4.0, 5.0, 6.0]).unwrap();
-        let scaler = MinMaxScaler::new().fit(&X).unwrap();
+        let mut scaler = MinMaxScaler::new();
+        scaler.fit(&X).unwrap();
         let X_scaled = scaler.transform(&X);
 
         // Check that values are in [0, 1]

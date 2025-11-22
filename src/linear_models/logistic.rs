@@ -39,8 +39,8 @@ impl<A: Float + ScalarOperand + Sum> LogisticRegression<A> {
         A::one() / (A::one() + (-z).exp())
     }
 
-    /// Fit the model
-    pub fn fit(mut self, X: &Array2<A>, y: &Array1<A>) -> Result<Self> {
+    /// Fit the model using gradient descent
+    pub fn fit(&mut self, X: &Array2<A>, y: &Array1<A>) -> Result<()> {
         if X.nrows() != y.len() {
             return Err(RustyAIError::DimensionMismatch(format!(
                 "X has {} samples but y has {} samples",
@@ -80,7 +80,21 @@ impl<A: Float + ScalarOperand + Sum> LogisticRegression<A> {
         self.intercept = Some(coef[0]);
         self.coef = Some(coef.slice(ndarray::s![1..]).to_owned());
 
-        Ok(self)
+        Ok(())
+    }
+
+    /// Compute accuracy score
+    pub fn score(&self, X: &Array2<A>, y: &Array1<A>) -> Result<A> {
+        let predictions = self.predict(X)?;
+        let correct: usize = predictions.iter().zip(y.iter())
+            .filter(|(&pred, &true_y)| pred == true_y)
+            .count();
+        Ok(A::from(correct).unwrap() / A::from(y.len()).unwrap())
+    }
+
+    /// Check if model is fitted
+    pub fn is_fitted(&self) -> bool {
+        self.coef.is_some()
     }
 
     /// Predict probabilities

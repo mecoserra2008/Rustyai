@@ -290,7 +290,7 @@ pub fn mean_shift<A: Float + ScalarOperand + Sum + FromPrimitive>(
 
         for i in 0..n {
             let point = modes.row(i);
-            let mut numerator = Array1::zeros(d);
+            let mut numerator: Array1<A> = Array1::zeros(d);
             let mut denominator = A::zero();
 
             // Compute weighted mean in bandwidth neighborhood
@@ -300,7 +300,9 @@ pub fn mean_shift<A: Float + ScalarOperand + Sum + FromPrimitive>(
 
                 if dist <= bandwidth {
                     let weight = gaussian_kernel(dist / bandwidth);
-                    numerator = &numerator + &(&neighbor.to_owned() * weight);
+                    for k in 0..d {
+                        numerator[k] = numerator[k] + neighbor[k] * weight;
+                    }
                     denominator = denominator + weight;
                 }
             }
@@ -327,7 +329,7 @@ pub fn mean_shift<A: Float + ScalarOperand + Sum + FromPrimitive>(
 
     // Merge close modes to form clusters
     let merge_threshold = bandwidth / A::from(2.0).unwrap();
-    let mut cluster_centers = Vec::new();
+    let mut cluster_centers: Vec<Array1<A>> = Vec::new();
     let mut labels = vec![0; n];
 
     for i in 0..n {
@@ -335,7 +337,7 @@ pub fn mean_shift<A: Float + ScalarOperand + Sum + FromPrimitive>(
         let mut assigned = false;
 
         for (cluster_id, center) in cluster_centers.iter().enumerate() {
-            let dist = euclidean_distance_1d(&mode, center);
+            let dist = euclidean_distance_1d(&mode.view(), &center.view());
             if dist < merge_threshold {
                 labels[i] = cluster_id;
                 assigned = true;

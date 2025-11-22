@@ -1,21 +1,16 @@
 //! Clustering algorithms
 //!
-//! Includes K-Means, DBSCAN, hierarchical clustering, and Gaussian Mixture Models.
+//! Comprehensive clustering methods:
+//! - K-Means: Partitioning clustering
+//! - DBSCAN: Density-based clustering
+//! - Hierarchical: Bottom-up/top-down clustering
+//! - Spectral: Graph-based clustering
 
-use crate::error::{Result, RustyAIError};
-use ndarray::{Array1, Array2};
-use serde::{Deserialize, Serialize};
+pub mod kmeans;
+pub mod advanced;
 
-/// K-Means clustering algorithm
-#[derive(Debug, Clone, Serialize, Deserialize)]
-pub struct KMeans<A> {
-    n_clusters: usize,
-    _phantom: std::marker::PhantomData<A>,
-}
-
-/// DBSCAN clustering algorithm
-#[derive(Debug, Clone)]
-pub struct DBSCAN<A> {
-    eps: A,
-    min_samples: usize,
-}
+pub use kmeans::KMeans;
+pub use advanced::{
+    dbscan, hierarchical_clustering, spectral_clustering, mean_shift,
+    DBSCANResult, HierarchicalResult, Linkage,
+};

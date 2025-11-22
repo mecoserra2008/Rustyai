@@ -186,6 +186,91 @@ pub fn kurtosis<A: Float + ScalarOperand + Sum>(data: &Array1<A>) -> A {
     kurt / n - A::from(3.0).unwrap()
 }
 
+/// One-way ANOVA (Analysis of Variance)
+///
+/// Tests whether the means of multiple groups are equal.
+/// Returns (F-statistic, degrees_of_freedom_between, degrees_of_freedom_within)
+pub fn one_way_anova<A: Float + ScalarOperand + Sum>(
+    groups: &[Array1<A>],
+) -> Option<(A, usize, usize)> {
+    if groups.is_empty() {
+        return None;
+    }
+
+    let k = groups.len(); // number of groups
+    let mut n_total = 0;
+    let mut grand_mean_num = A::zero();
+
+    // Compute grand mean
+    for group in groups {
+        n_total += group.len();
+        grand_mean_num = grand_mean_num + group.sum();
+    }
+
+    if n_total == 0 {
+        return None;
+    }
+
+    let grand_mean = grand_mean_num / A::from(n_total).unwrap();
+
+    // Compute between-group sum of squares (SSB)
+    let mut ssb = A::zero();
+    for group in groups {
+        let group_mean = mean(group);
+        let n_i = A::from(group.len()).unwrap();
+        ssb = ssb + n_i * (group_mean - grand_mean) * (group_mean - grand_mean);
+    }
+
+    // Compute within-group sum of squares (SSW)
+    let mut ssw = A::zero();
+    for group in groups {
+        let group_mean = mean(group);
+        for &val in group {
+            ssw = ssw + (val - group_mean) * (val - group_mean);
+        }
+    }
+
+    // Degrees of freedom
+    let df_between = k - 1;
+    let df_within = n_total - k;
+
+    if df_within == 0 {
+        return None;
+    }
+
+    // Mean squares
+    let msb = ssb / A::from(df_between).unwrap();
+    let msw = ssw / A::from(df_within).unwrap();
+
+    // F-statistic
+    let f_stat = if msw > A::zero() {
+        msb / msw
+    } else {
+        A::infinity()
+    };
+
+    Some((f_stat, df_between, df_within))
+}
+
+/// ANOVA result structure
+pub struct AnovaResult<A: Float> {
+    pub f_statistic: A,
+    pub df_between: usize,
+    pub df_within: usize,
+}
+
+impl<A: Float + ScalarOperand + Sum> AnovaResult<A> {
+    pub fn from_groups(groups: &[Array1<A>]) -> Option<Self> {
+        one_way_anova(groups).map(|(f_statistic, df_between, df_within)| {
+            Self {
+                f_statistic,
+                df_between,
+                df_within,
+            }
+        })
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
