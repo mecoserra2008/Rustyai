@@ -12,9 +12,16 @@ use std::iter::Sum;
 
 pub mod encoding;
 pub mod imputation;
+pub mod sampling;
 
 // Re-export encoding types
 pub use encoding::OneHotEncoder;
+
+// Re-export sampling types
+pub use sampling::{
+    SMOTE, ADASYN, ImportanceSampling, ReservoirSampling,
+    StratifiedSampling, SamplingStrategy,
+};
 
 /// Standard scaler - standardizes features by removing mean and scaling to unit variance
 #[derive(Debug, Clone, Serialize, Deserialize)]

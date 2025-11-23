@@ -5,7 +5,7 @@
 //! - Activation functions (ReLU, Leaky ReLU, ELU, GELU, Swish)
 //! - Normalization (BatchNorm, LayerNorm, Dropout)
 //! - Loss functions (MSE, Cross-Entropy, Focal Loss)
-//! - Optimizers (SGD, Adam, AdamW, RMSprop)
+//! - Optimizers (SGD, Adam, AdamW, RAdam, LAMB, RMSprop, Adagrad, Adadelta, Nadam, AMSGrad)
 //! - Automatic differentiation and backpropagation
 
 pub mod layers;

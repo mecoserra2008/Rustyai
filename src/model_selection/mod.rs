@@ -1,11 +1,19 @@
 //! Model selection and hyperparameter tuning
 //!
-//! Tools for cross-validation, train-test splitting, and hyperparameter tuning.
+//! Tools for cross-validation, train-test splitting, bootstrap resampling,
+//! and hyperparameter tuning.
 
 use crate::error::Result;
 use ndarray::{Array1, Array2, Axis};
 use num_traits::Float;
 use std::iter::Sum;
+
+pub mod bootstrap;
+
+pub use bootstrap::{
+    Bootstrap, StratifiedBootstrap, BlockBootstrap, Jackknife,
+    BalancedBootstrap, BootstrapCI, PermutationTest,
+};
 
 /// K-Fold cross-validation
 pub struct KFold {

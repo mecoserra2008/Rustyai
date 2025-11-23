@@ -1,16 +1,22 @@
 //! Reinforcement Learning
 //!
-//! Foundational RL algorithms and components:
+//! Foundational and Advanced RL algorithms:
 //! - Q-Learning (tabular)
 //! - Deep Q-Network (DQN)
 //! - Experience Replay
 //! - Epsilon-Greedy exploration
+//! - PPO, TD3, SAC, A2C (advanced algorithms)
+//! - Prioritized Experience Replay
 
 use crate::error::{Result, RustyAIError};
 use ndarray::{Array1, Array2, ScalarOperand};
 use num_traits::{Float, FromPrimitive};
 use std::collections::VecDeque;
 use std::iter::Sum;
+
+pub mod advanced;
+
+pub use advanced::{PPO, TD3, SAC, A2C, PrioritizedReplayBuffer};
 
 /// Q-Learning agent (tabular)
 pub struct QLearning<A: Float> {

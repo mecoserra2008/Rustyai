@@ -7,6 +7,10 @@
 //! - RAdam (Rectified Adam)
 //! - LAMB (Layer-wise Adaptive Moments optimizer for Batch training)
 //! - RMSprop
+//! - Adagrad (Adaptive Gradient Algorithm)
+//! - Adadelta (Adaptive Delta)
+//! - Nadam (Nesterov-accelerated Adam)
+//! - AMSGrad (Adam with improved convergence)
 
 use ndarray::{Array2, ScalarOperand};
 use num_traits::Float;
@@ -355,6 +359,229 @@ impl<A: Float + ScalarOperand + Sum> RMSprop<A> {
 
             // Update parameters
             **param = &**param - &(*grad * self.learning_rate / &(self.v[i].mapv(|v| v.sqrt()) + self.epsilon));
+        }
+    }
+}
+
+/// Adagrad optimizer (Adaptive Gradient Algorithm)
+///
+/// Adapts the learning rate for each parameter based on historical gradients.
+/// Good for sparse data but can have aggressive learning rate decay.
+pub struct Adagrad<A: Float> {
+    learning_rate: A,
+    epsilon: A,
+    accumulated_grad: Vec<Array2<A>>,
+}
+
+impl<A: Float + ScalarOperand + Sum> Adagrad<A> {
+    pub fn new(learning_rate: A) -> Self {
+        Self {
+            learning_rate,
+            epsilon: A::from(1e-8).unwrap(),
+            accumulated_grad: Vec::new(),
+        }
+    }
+
+    pub fn step(&mut self, params: &mut Vec<&mut Array2<A>>, grads: &[&Array2<A>]) {
+        if self.accumulated_grad.is_empty() {
+            self.accumulated_grad = grads.iter().map(|g| Array2::zeros(g.dim())).collect();
+        }
+
+        for (i, (param, grad)) in params.iter_mut().zip(grads.iter()).enumerate() {
+            // Accumulate squared gradients
+            self.accumulated_grad[i] = &self.accumulated_grad[i] + &grad.mapv(|g| g * g);
+
+            // Update parameters with adapted learning rate
+            **param = &**param - &(*grad * self.learning_rate /
+                &(self.accumulated_grad[i].mapv(|g| g.sqrt()) + self.epsilon));
+        }
+    }
+}
+
+/// Adadelta optimizer
+///
+/// Extension of Adagrad that seeks to reduce its aggressive, monotonically
+/// decreasing learning rate. Uses a moving window of gradient updates.
+pub struct Adadelta<A: Float> {
+    rho: A,
+    epsilon: A,
+    accumulated_grad: Vec<Array2<A>>,
+    accumulated_update: Vec<Array2<A>>,
+}
+
+impl<A: Float + ScalarOperand + Sum> Adadelta<A> {
+    pub fn new(rho: Option<A>) -> Self {
+        Self {
+            rho: rho.unwrap_or(A::from(0.95).unwrap()),
+            epsilon: A::from(1e-6).unwrap(),
+            accumulated_grad: Vec::new(),
+            accumulated_update: Vec::new(),
+        }
+    }
+
+    pub fn step(&mut self, params: &mut Vec<&mut Array2<A>>, grads: &[&Array2<A>]) {
+        if self.accumulated_grad.is_empty() {
+            self.accumulated_grad = grads.iter().map(|g| Array2::zeros(g.dim())).collect();
+            self.accumulated_update = grads.iter().map(|g| Array2::zeros(g.dim())).collect();
+        }
+
+        for (i, (param, grad)) in params.iter_mut().zip(grads.iter()).enumerate() {
+            // Accumulate gradient (exponential moving average)
+            self.accumulated_grad[i] = &(&self.accumulated_grad[i] * self.rho) +
+                &(grad.mapv(|g| g * g) * (A::one() - self.rho));
+
+            // Compute update
+            let rms_delta = self.accumulated_update[i].mapv(|u| u.sqrt()) + self.epsilon;
+            let rms_grad = self.accumulated_grad[i].mapv(|g| g.sqrt()) + self.epsilon;
+            let update = (*grad * &rms_delta) / &rms_grad;
+
+            // Accumulate update
+            self.accumulated_update[i] = &(&self.accumulated_update[i] * self.rho) +
+                &(update.mapv(|u| u * u) * (A::one() - self.rho));
+
+            // Update parameters
+            **param = &**param - &update;
+        }
+    }
+}
+
+/// Nadam optimizer (Nesterov-accelerated Adam)
+///
+/// Combines Adam with Nesterov momentum for improved convergence.
+pub struct Nadam<A: Float> {
+    learning_rate: A,
+    beta1: A,
+    beta2: A,
+    epsilon: A,
+    schedule_decay: A,
+    t: usize,
+    m: Vec<Array2<A>>,
+    v: Vec<Array2<A>>,
+}
+
+impl<A: Float + ScalarOperand + Sum> Nadam<A> {
+    pub fn new(
+        learning_rate: A,
+        beta1: Option<A>,
+        beta2: Option<A>,
+        schedule_decay: Option<A>,
+    ) -> Self {
+        Self {
+            learning_rate,
+            beta1: beta1.unwrap_or(A::from(0.9).unwrap()),
+            beta2: beta2.unwrap_or(A::from(0.999).unwrap()),
+            epsilon: A::from(1e-8).unwrap(),
+            schedule_decay: schedule_decay.unwrap_or(A::from(0.004).unwrap()),
+            t: 0,
+            m: Vec::new(),
+            v: Vec::new(),
+        }
+    }
+
+    pub fn step(&mut self, params: &mut Vec<&mut Array2<A>>, grads: &[&Array2<A>]) {
+        if self.m.is_empty() {
+            self.m = grads.iter().map(|g| Array2::zeros(g.dim())).collect();
+            self.v = grads.iter().map(|g| Array2::zeros(g.dim())).collect();
+        }
+
+        self.t += 1;
+        let t = A::from(self.t).unwrap();
+
+        // Momentum schedule
+        let momentum_cache_t = self.beta1 * (A::one() -
+            A::from(0.5).unwrap() * A::from(0.96).unwrap().powf(t * self.schedule_decay));
+        let momentum_cache_t_1 = self.beta1 * (A::one() -
+            A::from(0.5).unwrap() * A::from(0.96).unwrap().powf((t + A::one()) * self.schedule_decay));
+
+        for (i, (param, grad)) in params.iter_mut().zip(grads.iter()).enumerate() {
+            // Update biased first moment estimate
+            self.m[i] = &(&self.m[i] * self.beta1) + &(*grad * (A::one() - self.beta1));
+
+            // Update biased second raw moment estimate
+            self.v[i] = &(&self.v[i] * self.beta2) + &(grad.mapv(|g| g * g) * (A::one() - self.beta2));
+
+            // Bias correction
+            let m_hat = &self.m[i] / (A::one() - self.beta1.powf(t));
+            let v_hat = &self.v[i] / (A::one() - self.beta2.powf(t));
+
+            // Nesterov momentum
+            let m_bar = &(&(*grad * (A::one() - momentum_cache_t)) /
+                (A::one() - self.beta1.powf(t))) + &(&m_hat * momentum_cache_t_1);
+
+            // Update parameters
+            **param = &**param - &(&m_bar * self.learning_rate /
+                &(v_hat.mapv(|v| v.sqrt()) + self.epsilon));
+        }
+    }
+}
+
+/// AMSGrad optimizer
+///
+/// Variant of Adam that maintains the maximum of past squared gradients
+/// for improved convergence guarantees.
+pub struct AMSGrad<A: Float> {
+    learning_rate: A,
+    beta1: A,
+    beta2: A,
+    epsilon: A,
+    t: usize,
+    m: Vec<Array2<A>>,
+    v: Vec<Array2<A>>,
+    v_max: Vec<Array2<A>>,
+}
+
+impl<A: Float + ScalarOperand + Sum> AMSGrad<A> {
+    pub fn new(learning_rate: A, beta1: Option<A>, beta2: Option<A>) -> Self {
+        Self {
+            learning_rate,
+            beta1: beta1.unwrap_or(A::from(0.9).unwrap()),
+            beta2: beta2.unwrap_or(A::from(0.999).unwrap()),
+            epsilon: A::from(1e-8).unwrap(),
+            t: 0,
+            m: Vec::new(),
+            v: Vec::new(),
+            v_max: Vec::new(),
+        }
+    }
+
+    pub fn step(&mut self, params: &mut Vec<&mut Array2<A>>, grads: &[&Array2<A>]) {
+        if self.m.is_empty() {
+            self.m = grads.iter().map(|g| Array2::zeros(g.dim())).collect();
+            self.v = grads.iter().map(|g| Array2::zeros(g.dim())).collect();
+            self.v_max = grads.iter().map(|g| Array2::zeros(g.dim())).collect();
+        }
+
+        self.t += 1;
+        let t = A::from(self.t).unwrap();
+
+        let bias_correction1 = A::one() - self.beta1.powf(t);
+        let bias_correction2 = A::one() - self.beta2.powf(t);
+
+        for (i, (param, grad)) in params.iter_mut().zip(grads.iter()).enumerate() {
+            // Update biased first moment estimate
+            self.m[i] = &(&self.m[i] * self.beta1) + &(*grad * (A::one() - self.beta1));
+
+            // Update biased second raw moment estimate
+            self.v[i] = &(&self.v[i] * self.beta2) + &(grad.mapv(|g| g * g) * (A::one() - self.beta2));
+
+            // Maintain max of v_t (element-wise max)
+            for j in 0..self.v[i].len() {
+                let v_flat = self.v[i].as_slice().unwrap();
+                let v_max_flat = self.v_max[i].as_slice_mut().unwrap();
+                if v_flat[j] > v_max_flat[j] {
+                    v_max_flat[j] = v_flat[j];
+                }
+            }
+
+            // Compute bias-corrected moments
+            let m_hat = &self.m[i] / bias_correction1;
+
+            // Use v_max instead of v for update
+            let v_max_hat = &self.v_max[i] / bias_correction2;
+
+            // Update parameters
+            **param = &**param - &(&m_hat * self.learning_rate /
+                &(v_max_hat.mapv(|v| v.sqrt()) + self.epsilon));
         }
     }
 }
