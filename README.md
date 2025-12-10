@@ -38,6 +38,8 @@ RustyAI aims to revolutionize data science in Rust by:
 - ✅ **Linear Models**: Linear regression, logistic regression, Ridge, Lasso
 - ✅ **Ensemble Methods**: Random forests, gradient boosting (XGBoost-like)
 - ✅ **Clustering**: K-Means, DBSCAN
+- ✅ **Nearest Neighbors**: KNN classifier & regressor with multiple distance metrics
+- ✅ **Naive Bayes**: Gaussian NB, Multinomial NB
 - ✅ **Metrics**: MSE, RMSE, R², accuracy, precision, recall, F1, confusion matrix
 
 #### Advanced Econometrics & Statistics
@@ -369,13 +371,15 @@ cargo bench
 - [x] Clustering algorithms
 - [x] Evaluation metrics
 
-### v0.2 (Current)
+### v0.2 (Current - Complete!)
 - [x] Neural network framework with autograd
 - [x] Time series analysis (ARIMA, VAR, GARCH)
-- [x] SVM implementation
-- [x] PCA and dimensionality reduction
-- [x] Feature selection methods
-- [x] Cross-validation and grid search
+- [x] SVM implementation with multiple kernels
+- [x] PCA, t-SNE, and UMAP dimensionality reduction
+- [x] Feature selection methods (SelectKBest, RFE)
+- [x] Cross-validation and GridSearchCV
+- [x] K-Nearest Neighbors (classification & regression)
+- [x] Naive Bayes classifiers (Gaussian, Multinomial)
 - [ ] VECM (Vector Error Correction Models)
 - [ ] State Space Models (Kalman filtering)
 
