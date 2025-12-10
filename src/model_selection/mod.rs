@@ -174,9 +174,134 @@ where
     scores
 }
 
+/// Parameter grid for GridSearchCV
+pub type ParameterGrid = std::collections::HashMap<String, Vec<f64>>;
+
 /// Grid search for hyperparameter tuning
+///
+/// GridSearchCV exhaustively searches over specified parameter values
+/// for an estimator and selects the best combination based on cross-validation.
 pub struct GridSearchCV {
-    // To be implemented
+    cv: usize,
+    best_params_: Option<std::collections::HashMap<String, f64>>,
+    best_score_: Option<f64>,
+    cv_results_: Option<Vec<(std::collections::HashMap<String, f64>, f64)>>,
+}
+
+impl GridSearchCV {
+    /// Create a new GridSearchCV
+    ///
+    /// # Arguments
+    /// * `cv` - Number of cross-validation folds
+    pub fn new(cv: usize) -> Self {
+        Self {
+            cv,
+            best_params_: None,
+            best_score_: None,
+            cv_results_: None,
+        }
+    }
+
+    /// Generate all combinations from parameter grid
+    fn generate_param_combinations(
+        &self,
+        param_grid: &ParameterGrid,
+    ) -> Vec<std::collections::HashMap<String, f64>> {
+        let keys: Vec<&String> = param_grid.keys().collect();
+        let mut combinations = Vec::new();
+
+        if keys.is_empty() {
+            return combinations;
+        }
+
+        // Recursive helper to generate combinations
+        fn generate_recursive(
+            keys: &[&String],
+            param_grid: &ParameterGrid,
+            current: std::collections::HashMap<String, f64>,
+            combinations: &mut Vec<std::collections::HashMap<String, f64>>,
+        ) {
+            if keys.is_empty() {
+                combinations.push(current);
+                return;
+            }
+
+            let key = keys[0];
+            let values = &param_grid[key];
+
+            for &value in values {
+                let mut new_current = current.clone();
+                new_current.insert(key.clone(), value);
+                generate_recursive(&keys[1..], param_grid, new_current, combinations);
+            }
+        }
+
+        generate_recursive(&keys, param_grid, std::collections::HashMap::new(), &mut combinations);
+        combinations
+    }
+
+    /// Fit the grid search (simplified version for demonstration)
+    ///
+    /// Note: This is a basic implementation that demonstrates the structure.
+    /// A full implementation would need to work with generic estimators.
+    pub fn fit_simple<A: Float + Copy>(
+        &mut self,
+        X: &Array2<A>,
+        y: &Array1<A>,
+        param_grid: &ParameterGrid,
+        mut score_fn: impl FnMut(&Array2<A>, &Array1<A>, &Array2<A>, &Array1<A>, &std::collections::HashMap<String, f64>) -> A,
+    ) -> Result<()> {
+        let kfold = KFold::new(self.cv);
+        let folds = kfold.split_data(X, y);
+
+        let param_combinations = self.generate_param_combinations(param_grid);
+        let mut results = Vec::new();
+        let mut best_score = A::neg_infinity();
+        let mut best_params = std::collections::HashMap::new();
+
+        // Try each parameter combination
+        for params in param_combinations {
+            let mut fold_scores = Vec::new();
+
+            // Evaluate on each fold
+            for (X_train, y_train, X_test, y_test) in &folds {
+                let score = score_fn(X_train, y_train, X_test, y_test, &params);
+                fold_scores.push(score);
+            }
+
+            // Compute mean score
+            let sum: A = fold_scores.iter().fold(A::zero(), |acc, &x| acc + x);
+            let mean_score: A = sum / A::from(fold_scores.len()).unwrap();
+
+            results.push((params.clone(), mean_score.to_f64().unwrap_or(0.0)));
+
+            if mean_score > best_score {
+                best_score = mean_score;
+                best_params = params;
+            }
+        }
+
+        self.best_params_ = Some(best_params);
+        self.best_score_ = Some(best_score.to_f64().unwrap_or(0.0));
+        self.cv_results_ = Some(results);
+
+        Ok(())
+    }
+
+    /// Get the best parameters
+    pub fn best_params(&self) -> Option<&std::collections::HashMap<String, f64>> {
+        self.best_params_.as_ref()
+    }
+
+    /// Get the best score
+    pub fn best_score(&self) -> Option<f64> {
+        self.best_score_
+    }
+
+    /// Get all cross-validation results
+    pub fn cv_results(&self) -> Option<&Vec<(std::collections::HashMap<String, f64>, f64)>> {
+        self.cv_results_.as_ref()
+    }
 }
 
 #[cfg(test)]
