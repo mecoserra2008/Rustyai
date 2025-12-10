@@ -68,12 +68,15 @@ RustyAI aims to revolutionize data science in Rust by:
 - ✅ **Unit Root Tests**: Augmented Dickey-Fuller
 - ✅ **Diagnostics**: Ljung-Box, autocorrelation tests
 
+#### Advanced Machine Learning
+- ✅ **Feature Selection**: SelectKBest (F-test, chi-square), RFE
+- ✅ **Model Selection**: GridSearchCV, cross-validation, train-test split
+- ✅ **Support Vector Machines**: SVC with multiple kernels (linear, RBF, polynomial)
+- ✅ **Automatic Differentiation**: Tensor with gradient tracking, autograd engine
+
 #### In Development
-- 🚧 **Neural Networks**: Deep learning framework
 - 🚧 **VECM**: Vector error correction models
 - 🚧 **State Space Models**: Kalman filtering
-- 🚧 **Feature Selection**: SelectKBest, RFE
-- 🚧 **Model Selection**: GridSearchCV, cross-validation
 
 ### **Superior Developer Experience**
 - **Consistent API**: Scikit-learn-inspired design adapted for Rust idioms
@@ -306,12 +309,14 @@ RustyAI was built after comprehensive research into the Rust ML ecosystem in 202
 ### **Gaps Identified and Addressed**
 
 1. ✅ **Ecosystem Fragmentation**: Unified API across all components
-2. ✅ **Missing Algorithms**: Comprehensive gradient boosting, advanced preprocessing
+2. ✅ **Missing Algorithms**: Comprehensive gradient boosting, SVM, advanced preprocessing
 3. ✅ **Poor Ergonomics**: Builder patterns, intuitive API design
 4. ✅ **Limited Statistics**: Full statistical toolkit matching statsmodels
 5. ✅ **Incomplete Preprocessing**: One-hot encoding, imputation, scaling
-6. 🚧 **No AutoML**: Hyperparameter optimization framework (in progress)
-7. 🚧 **Limited Time Series**: SARIMA, forecasting models (in progress)
+6. ✅ **Feature Selection**: SelectKBest, RFE for feature engineering
+7. ✅ **Hyperparameter Tuning**: GridSearchCV, cross-validation
+8. ✅ **Time Series**: ARIMA, VAR, GARCH forecasting models
+9. ✅ **Deep Learning**: Autograd engine with gradient tracking
 
 ## 📊 Benchmarks
 
@@ -364,13 +369,15 @@ cargo bench
 - [x] Clustering algorithms
 - [x] Evaluation metrics
 
-### v0.2 (Next)
-- [ ] Neural network framework with autograd
-- [ ] Time series analysis (ARIMA, SARIMA)
-- [ ] SVM implementation
-- [ ] PCA and dimensionality reduction
-- [ ] Feature selection methods
-- [ ] Cross-validation and grid search
+### v0.2 (Current)
+- [x] Neural network framework with autograd
+- [x] Time series analysis (ARIMA, VAR, GARCH)
+- [x] SVM implementation
+- [x] PCA and dimensionality reduction
+- [x] Feature selection methods
+- [x] Cross-validation and grid search
+- [ ] VECM (Vector Error Correction Models)
+- [ ] State Space Models (Kalman filtering)
 
 ### v0.3
 - [ ] Advanced ensemble methods (stacking, blending)

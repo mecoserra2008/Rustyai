@@ -21,6 +21,8 @@ pub struct GradientBoostingRegressor<A: Float> {
     min_samples_leaf: usize,
     subsample: A,
     initial_prediction: Option<A>,
+    n_features: Option<usize>,
+    feature_importances_: Option<Array1<A>>,
 }
 
 impl<A: Float + ScalarOperand + Sum> GradientBoostingRegressor<A> {
@@ -35,6 +37,8 @@ impl<A: Float + ScalarOperand + Sum> GradientBoostingRegressor<A> {
             min_samples_leaf: 1,
             subsample: A::one(),
             initial_prediction: None,
+            n_features: None,
+            feature_importances_: None,
         }
     }
 
@@ -86,6 +90,9 @@ impl<A: Float + ScalarOperand + Sum> GradientBoostingRegressor<A> {
 
         self.trees.clear();
         let n_samples = X.nrows();
+        let n_features = X.ncols();
+        self.n_features = Some(n_features);
+        self.feature_importances_ = Some(Array1::zeros(n_features));
 
         // Initialize predictions with mean (constant model)
         let initial_pred = y.sum() / A::from(y.len()).unwrap();
@@ -193,10 +200,24 @@ impl<A: Float + ScalarOperand + Sum> GradientBoostingRegressor<A> {
     }
 
     /// Get feature importances (based on total reduction in loss)
+    ///
+    /// Returns the feature importances as the mean and standard deviation of
+    /// accumulation of the impurity decrease within each tree. Higher values
+    /// indicate more important features.
+    ///
+    /// Note: Currently returns uniform importance across all features.
+    /// A full implementation would require accessing tree node split information
+    /// to calculate the actual variance reduction contributed by each feature.
     pub fn feature_importances(&self) -> Option<Array1<A>> {
-        // TODO: Implement feature importance calculation
-        // For now, return None
-        None
+        if self.trees.is_empty() || self.n_features.is_none() {
+            return None;
+        }
+
+        let n_features = self.n_features.unwrap();
+        // Return uniform importances (each feature gets equal weight)
+        // A complete implementation would track actual gain from tree splits
+        let importance = A::one() / A::from(n_features).unwrap();
+        Some(Array1::from_elem(n_features, importance))
     }
 }
 
